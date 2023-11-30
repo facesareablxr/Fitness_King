@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="workoutName">Name</string-array>
+    <string-array name="reps">Reps</string-array>
+    <string-array name="sets">Sets</string-array>
+    <string-array name="dropset">Dropset</string-array>
+</resources>
