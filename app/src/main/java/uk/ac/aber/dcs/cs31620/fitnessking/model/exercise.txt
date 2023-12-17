@@ -1,0 +1,27 @@
+Exercise,Drop-Set,Repetitions,Sets,Weight,Body
+Squats,N,10,3,10,Legs
+Lunges,N,10,3,10,Legs
+Push-ups,N,20,3,10,Chest
+Bench Press,N,10,3,10,Chest
+Overhead Press,N,10,3,10,Shoulders
+Bicep Curls,N,15,3,10,Biceps
+Hammer Curls,N,15,3,10,Biceps
+Tricep Extensions,N,15,3,10,Triceps
+Triceps Pushdowns,N,15,3,10,Triceps
+Plank,N,60,3,10,Core
+Crunches,N,20,3,10,Abs
+Leg Raises,N,20,3,10,Abs
+Rows,N,10,3,10,Back
+Pull-ups,Y,null,null,null,Back
+Deadlifts,Y,null,null,null,Back
+Barbell Curls,Y,null,null,null,Biceps
+Overhead Dumbbell Extensions,Y,null,null,null,Triceps
+Military Press,Y,null,null,null,Shoulders
+Seated Cable Rows,Y,null,null,null,Back
+Bicep Hammer Curls,Y,null,null,null,Biceps
+Lying Leg Curls,Y,null,null,null,Hamstrings
+Leg Press,Y,null,null,null,Legs
+Hamstring Curls,Y,null,null,null,Hamstrings
+Calf Raises,Y,null,null,null,Calves
+Plank With Side Plank,Y,null,null,null,Core
+Romanian deadlifts,N,12,3,10,Hamstrings

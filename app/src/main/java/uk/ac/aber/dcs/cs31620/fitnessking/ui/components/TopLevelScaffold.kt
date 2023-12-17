@@ -23,7 +23,7 @@ fun TopLevelScaffold(
         navController,
         drawerState = drawerState,
         closeDrawer = {
-            coroutineScope.launch {
+            coroutineScope.launch{
                 drawerState.close()
             }
         }

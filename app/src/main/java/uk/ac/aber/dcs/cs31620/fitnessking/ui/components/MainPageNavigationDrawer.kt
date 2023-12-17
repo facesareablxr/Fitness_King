@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -92,7 +93,7 @@ fun MainPageNavigationDrawer(
                         .fillMaxSize()
                         .padding(20.dp, 0.dp)
                 ) {
-                    items.forEachIndexed { index, item ->
+                   items.forEachIndexed { index, item ->
                         NavigationDrawerItem(
                             icon = {
                                 Icon(
@@ -117,6 +118,7 @@ fun MainPageNavigationDrawer(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 private fun MainPageNavigationDrawerPreview() {
