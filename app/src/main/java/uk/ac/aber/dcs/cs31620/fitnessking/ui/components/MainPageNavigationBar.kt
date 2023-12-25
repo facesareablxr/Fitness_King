@@ -21,6 +21,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
+import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.IconGroup
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.navigation.Screen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.navigation.screens
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.theme.FitnessKingTheme

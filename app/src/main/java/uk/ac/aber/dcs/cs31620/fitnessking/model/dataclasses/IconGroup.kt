@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.ui.components
+package uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
