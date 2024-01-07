@@ -14,9 +14,9 @@ import uk.ac.aber.dcs.cs31620.fitnessking.model.database.entity.ExerciseEntity
  */
 @Dao
 interface ExerciseDao {
-    // Gets all exercises from the database as a LiveData object
-    @Query("SELECT * FROM exercises")
-    fun getAllExercises(): LiveData<List<ExerciseEntity>>
+    /**
+     * General commands
+     */
     // Adds a new exercise into the database
     @Insert
     suspend fun insertExercise(exercise: ExerciseEntity)
@@ -27,8 +27,16 @@ interface ExerciseDao {
     @Delete
     suspend fun deleteExercise(exercise: ExerciseEntity)
 
-    @Query("SELECT * FROM exercises WHERE id = :workoutId")
-    suspend fun getExercisesByWorkoutId(workoutId: Int): List<ExerciseEntity>
+    /**
+     * Queries
+     */
+    // Gets all the exercises by their id
+    @Query("SELECT * FROM exercises WHERE exerciseId = :id")
+    fun getExerciseById(id: Int): ExerciseEntity
+    // Gets all exercises from the database as a LiveData object
+    @Query("SELECT * FROM exercises")
+    fun getAllExercises(): LiveData<List<ExerciseEntity>>
+
 
 }
 

@@ -22,9 +22,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.IconGroup
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.navigation.Screen
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.navigation.screens
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.theme.FitnessKingTheme
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.screens
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
 @Composable
 fun MainPageNavigationBar(navController: NavController){
@@ -49,7 +49,7 @@ fun MainPageNavigationBar(navController: NavController){
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
-        screens.forEach{screen ->
+        screens.forEach{ screen ->
             val isSelected = currentDestination?.hierarchy?.any{it.route == screen.route} == true
             val labelText = icons[screen]!!.label
             NavigationBarItem(

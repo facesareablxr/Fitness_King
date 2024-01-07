@@ -7,7 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.theme.FitnessKingTheme
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 import uk.ac.aber.dcs.cs31620.fitnessking.R
 
 @Composable

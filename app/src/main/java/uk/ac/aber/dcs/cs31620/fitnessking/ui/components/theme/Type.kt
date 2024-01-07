@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.ui.theme
+package uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

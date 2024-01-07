@@ -18,4 +18,17 @@
     <string name="image_url">Image URL</string>
     <string name="add_exercise_button">Add Exercise</string>
     <string name="savedWorkouts">Saved Workouts</string>
+    <string name="addWorkoutButton">Add Workout Floating Action Button</string>
+    <string name="addWorkout">Add workout</string>
+    <string name="goBack">Go back button</string>
+    <string name="dropdown_icon">Dropdown Icon</string>
+    <string name="dropdown">Dropdown Icon</string>
+    <string name="photoerror">Cannot save image</string>
+    <string name="selectExercise">Select an Exercise</string>
+    <string name="totalTime">"Total Workout Time: "</string>
+    <string name="addExerciseName">"Enter Exercise Name: "</string>
+    <string name="exerciseImage">Image of an exercise</string>
+    <string name="enterImage">Tap to replace image</string>
+    <string name="imageError">An error occurred</string>
+    <string name="addExercise">Add exercise floating button</string>
 </resources>

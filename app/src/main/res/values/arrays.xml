@@ -4,4 +4,24 @@
     <string-array name="reps">Reps</string-array>
     <string-array name="sets">Sets</string-array>
     <string-array name="dropset">Dropset</string-array>
+    <string-array name="DayOfWeek">
+        <item>Any Day</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+    <string-array name="Focus">
+        <item>Any Focus</item>
+        <item>Arms</item>
+        <item>Legs</item>
+        <item>Back</item>
+        <item>Chest</item>
+        <item>Cardio</item>
+        <item>Strength</item>
+        <item>Full Body</item>
+    </string-array>
 </resources>

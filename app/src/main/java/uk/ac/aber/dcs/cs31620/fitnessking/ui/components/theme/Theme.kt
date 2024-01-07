@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.ui.theme
+package uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme
 
 import android.app.Activity
 import android.os.Build

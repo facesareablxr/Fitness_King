@@ -4,34 +4,43 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.dao.ExerciseDao
+import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
+import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
 
 /**
  * This is the entity class for the workouts, it defines the different columns within a workout table
  * including the relation to the exercise table.
  */
+@TypeConverters(ExerciseIdsConverter::class)
 @Entity(tableName = "workouts")
 data class WorkoutEntity(
     @PrimaryKey(autoGenerate = true) var id: Int = 0,
-    var day: java.time.DayOfWeek,
-    var focus: String,
+    var day: DaysOfWeek,
+    var focus: Focus,
     var length: Int,
-    @ColumnInfo(name = "exercise_id") val exerciseId: Int
-) {
-    @Ignore var exercises: List<ExerciseEntity> = emptyList()
+    @ColumnInfo(name = "exercise_ids") val exerciseIds: List<Int> = emptyList(),
+    //@ColumnInfo(name = "exercise_id") val exerciseId: Int
 
-    suspend fun calculateTotalLength(exerciseDao: ExerciseDao): Int {
+) {
+    @Ignore var exerciseEntities: List<ExerciseEntity> = emptyList()
+
+    fun calculateTotalLength(exerciseDao: ExerciseDao): Int {
         // Fetch exercises if not already populated
-        if (exercises.isEmpty()) {
-            exercises = getExercises(exerciseDao)
+        if (exerciseEntities.isEmpty()) {
+            exerciseEntities = getExercises(exerciseDao)
         }
 
         // Calculate total length
-        return exercises.sumOf { it.length }
+        return exerciseEntities.sumOf { it.length }
     }
 
-    private suspend fun getExercises(exerciseDao: ExerciseDao): List<ExerciseEntity> {
-        return exerciseDao.getExercisesByWorkoutId(id)
+    private fun getExercises(exerciseDao: ExerciseDao): List<ExerciseEntity> {
+        return listOf(exerciseDao.getExerciseById(id))
     }
+
+
+
 
 }

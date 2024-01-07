@@ -10,12 +10,12 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "exercises")
 data class ExerciseEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val exerciseId: Int = 0,
     val name: String,
-    val imageUri: String,
     val sets: Int,
     val reps: Int,
-    val weight: Double,
+    val weight: Int,
     val length: Int,
-    val isDropSet: Boolean = false
+    val isDropSet: Boolean = false,
+    val imageUri: String
 )

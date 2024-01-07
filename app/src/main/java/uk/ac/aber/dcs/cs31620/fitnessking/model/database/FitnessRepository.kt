@@ -4,14 +4,14 @@ package uk.ac.aber.dcs.cs31620.fitnessking.model.database
 import android.app.Application
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.entity.ExerciseEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.entity.WorkoutEntity
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.viewmodel.Injection
 import java.time.DayOfWeek
 
 class FitnessRepository(application: Application) {
-    private val exerciseDao = RoomDB.getInstance(application).exerciseDao()
-    private val workoutDao = RoomDB.getInstance(application).workoutDao()
+    private val exerciseDao = Injection.getDatabase(application).ExerciseDao()
+    private val workoutDao = Injection.getDatabase(application).WorkoutDao()
 
     // Exercise CRUD Functions
-
     fun getAllExercises() = exerciseDao.getAllExercises()
 
     suspend fun insertExercise(exercise: ExerciseEntity) = exerciseDao.insertExercise(exercise)

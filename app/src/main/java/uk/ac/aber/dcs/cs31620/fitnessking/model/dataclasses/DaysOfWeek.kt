@@ -1,6 +1,6 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses
 
-enum class DayOfWeek {
+enum class DaysOfWeek {
     Monday,
     Tuesday,
     Wednesday,

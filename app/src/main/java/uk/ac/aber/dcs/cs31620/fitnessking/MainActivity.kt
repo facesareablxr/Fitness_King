@@ -12,11 +12,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.home.HomeScreen
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.navigation.Screen
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.profile.ProfileScreen
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule.ScheduleScreen
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.theme.FitnessKingTheme
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.workouts.SavedWorkoutsScreen
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.editing.SavedWorkoutsScreen
 
 /**
  * Starting activity class. Entry point for the app.

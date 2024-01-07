@@ -25,6 +25,16 @@ class ExerciseViewModel(private val exerciseDao: ExerciseDao) : ViewModel() {
         exerciseDao.deleteExercise(exercise)
     }
 
+    //Function to get exercises by their ID
+    fun getExerciseById(id: Int): ExerciseEntity {
+        return exerciseDao.getExerciseById(id)
+    }
+
+    // Function to calculate the length of the workout, from the list of exercises
+    fun calculateLength(selectedExerciseIds: List<Int>, exerciseDao: ExerciseDao): Int {
+        val selectedExercises = selectedExerciseIds.map { exerciseDao.getExerciseById(it) }
+        return selectedExercises.sumOf { it.length }
+    }
 
 
 }

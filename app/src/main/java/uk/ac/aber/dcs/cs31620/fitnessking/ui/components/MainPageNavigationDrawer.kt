@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.theme.FitnessKingTheme
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
 @Composable
 fun MainPageNavigationDrawer(
