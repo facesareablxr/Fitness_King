@@ -9,7 +9,7 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.core.content.FileProvider
 import uk.ac.aber.dcs.cs31620.fitnessking.R
-import uk.ac.aber.dcs.cs31620.fitnessking.model.util.ResourceUtil
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.util.ResourceUtil
 import java.io.File
 import java.io.IOException
 

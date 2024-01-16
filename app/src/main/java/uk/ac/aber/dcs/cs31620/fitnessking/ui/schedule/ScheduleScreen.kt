@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -28,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Workout
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.home.HomeScreenContent
 
 val weeklyWorkouts = listOf(
     Workout("Monday", "Push-ups","Chest"),
@@ -45,18 +47,25 @@ val weeklyWorkouts = listOf(
  * @author Lauren Davis
  */
 @Composable
-fun ScheduleScreen(navController: NavHostController) {
+fun ScheduleScreen(
+navController: NavHostController,
+) {
+    val coroutineScope = rememberCoroutineScope()
+
     TopLevelScaffold(
-        navController = navController
-    ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            ScheduleScreenContent()
+        navController = navController,
+        coroutineScope = coroutineScope,
+        pageContent = { innerPadding ->
+            Surface(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                ScheduleScreenContent(
+                    )
+            }
         }
-    }
+    )
 }
 
 /**

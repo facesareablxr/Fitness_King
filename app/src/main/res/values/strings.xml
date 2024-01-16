@@ -12,9 +12,9 @@
     <string name="exercise_name">Exercise Name</string>
     <string name="sets">Sets</string>
     <string name="reps">Reps</string>
-    <string name="weight">Weight</string>
+    <string name="weight">Weight (kg)</string>
     <string name="focus">Focus</string>
-    <string name="dropset">Dropset</string>
+    <string name="dropset">Drop Set</string>
     <string name="image_url">Image URL</string>
     <string name="add_exercise_button">Add Exercise</string>
     <string name="savedWorkouts">Saved Workouts</string>
@@ -26,9 +26,12 @@
     <string name="photoerror">Cannot save image</string>
     <string name="selectExercise">Select an Exercise</string>
     <string name="totalTime">"Total Workout Time: "</string>
-    <string name="addExerciseName">"Enter Exercise Name: "</string>
+    <string name="addExerciseName">"Exercise Name"</string>
     <string name="exerciseImage">Image of an exercise</string>
     <string name="enterImage">Tap to replace image</string>
     <string name="imageError">An error occurred</string>
-    <string name="addExercise">Add exercise floating button</string>
+    <string name="addExercise">Add Exercise</string>
+    <string name="AddSuccess">Successfully added</string>
+    <string name="AddFail">Failed to add, check information and try again</string>
+    <string name="dismiss">Dismiss</string>
 </resources>

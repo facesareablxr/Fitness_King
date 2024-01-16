@@ -14,7 +14,10 @@ import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.TopLevelScaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.lifecycle.viewmodel.compose.viewModel
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutViewModel
 import java.time.LocalDate
 
 /**
@@ -24,32 +27,38 @@ import java.time.LocalDate
 @Composable
 fun HomeScreen(
     navController: NavHostController,
+    workoutViewModel: WorkoutViewModel = viewModel()
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     TopLevelScaffold(
-        navController = navController
-    ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            HomeScreenContent(
-                modifier = Modifier.padding(8.dp)
-            )
+        navController = navController,
+        coroutineScope = coroutineScope,
+        pageContent = { innerPadding ->
+            Surface(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                HomeScreenContent(
+                    modifier = Modifier.padding(8.dp),
+
+                    )
+            }
         }
-    }
+    )
 }
 
 @Composable
 fun HomeScreenContent(modifier: Modifier = Modifier) {
    Column(modifier = Modifier.padding(8.dp)) {
-            // Display current day as title
             val currentDayCaps = LocalDate.now().dayOfWeek.name
             val currentDay = currentDayCaps.lowercase().replaceFirstChar { it.uppercase() }
             Text(
                 text = currentDay,
                 style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
                     .align(CenterHorizontally)
             )
         // Main workout card

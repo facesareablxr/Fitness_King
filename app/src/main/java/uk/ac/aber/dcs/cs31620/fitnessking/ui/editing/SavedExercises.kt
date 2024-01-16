@@ -1,43 +1,79 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.ui.editing
 
-import androidx.compose.foundation.layout.BoxScopeInstance.align
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
+import uk.ac.aber.dcs.cs31620.fitnessking.R
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseViewModel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.TopLevelScaffold
-
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
 @Composable
-fun SavedExerciseScreen(navController: NavHostController) {
-    TopLevelScaffold(
+fun SavedExerciseTopLevel(
+    navController: NavHostController,
+    exerciseViewModel: ExerciseViewModel = viewModel()
+){
+    val exerciseList by exerciseViewModel.allExercises.observeAsState(listOf())
+    SavedExerciseScreen(
         navController = navController,
-        pageContent = { innerPadding ->
-            // Content of SavedExerciseScreen
-            Column(
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                // Display saved exercises here
-                // ...
-            }
+        exerciseList = exerciseList
+    )
 
-            // Floating action button for navigation
+}
+
+@Composable
+fun SavedExerciseScreen(
+    navController: NavHostController,
+    exerciseList: List<ExerciseEntity>
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    TopLevelScaffold(
+        coroutineScope = coroutineScope,
+        navController = navController,
+        floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate("edit_exercise_screen") // Replace with actual route
+                    navController.navigate(Screen.AddExercise.route)
+                    coroutineScope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "Add cat",
+                            actionLabel = "Undo"
+                        )
+                    }
                 },
-                modifier = Modifier.align(Alignment.BottomEnd)
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = "Add Exercise"
+                    contentDescription = stringResource(R.string.addExercise)
                 )
             }
-        }
+        },
     )
 }
+
+@Preview
+@Composable
+private fun SavedExerciseScreen() {
+    val navController = rememberNavController()
+    FitnessKingTheme(dynamicColor = false) {
+        SavedExerciseTopLevel(navController = navController)
+    }
+}
+

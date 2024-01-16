@@ -8,9 +8,11 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
@@ -27,7 +29,7 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.screens
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
 @Composable
-fun MainPageNavigationBar(navController: NavController){
+fun MainPageNavigationBar(navController: NavController) {
     val icons = mapOf(
         Screen.Home to IconGroup(
             filledIcon = Icons.Filled.Home,
@@ -46,38 +48,43 @@ fun MainPageNavigationBar(navController: NavController){
         )
     )
 
-    NavigationBar {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
-        screens.forEach{ screen ->
-            val isSelected = currentDestination?.hierarchy?.any{it.route == screen.route} == true
-            val labelText = icons[screen]!!.label
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        imageVector = (
-                                if (isSelected)
-                                    icons[screen]!!.filledIcon
-                                else
-                                    icons[screen]!!.outlineIcon),
-                        contentDescription = labelText
-                    )
-                },
-                label = { Text(labelText)},
-                selected = isSelected,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+        NavigationBar(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.contentColorFor(MaterialTheme.colorScheme.surface),
+        ) {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            screens.forEach { screen ->
+                val isSelected =
+                    currentDestination?.hierarchy?.any { it.route == screen.route } == true
+                val labelText = icons[screen]!!.label
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            imageVector = (
+                                    if (isSelected)
+                                        icons[screen]!!.filledIcon
+                                    else
+                                        icons[screen]!!.outlineIcon),
+                            contentDescription = labelText
+                        )
+                    },
+                    label = { Text(labelText) },
+                    selected = isSelected,
+                    onClick = {
+                        navController.navigate(screen.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
-                }
-            )
+                )
+            }
         }
     }
-}
+
 
 @Preview
 @Composable

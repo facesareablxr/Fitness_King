@@ -18,10 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.entity.ExerciseEntity
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.entity.WorkoutEntity
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.viewmodel.ExerciseViewModel
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.viewmodel.WorkoutViewModel
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseViewModel
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.ButtonSpinner
@@ -126,11 +125,10 @@ private fun insertWorkout(
 ) {
     if(exerciseIds.isNotEmpty()){
         val workout = WorkoutEntity(
-            id = 0,
+            workoutId = 0,
             day = dayOfWeek,
             focus = focus,
-            length =  length,
-            exerciseIds = exerciseIds
+            length =  length
         )
         doInsert(workout)
     }

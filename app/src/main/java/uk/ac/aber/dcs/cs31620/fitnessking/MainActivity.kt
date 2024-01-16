@@ -11,11 +11,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.AddNewExerciseTopLevel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.home.HomeScreen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule.ScheduleScreen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.editing.SavedWorkoutsScreen
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.editing.SavedExerciseTopLevel
 
 /**
  * Starting activity class. Entry point for the app.
@@ -48,7 +49,8 @@ private fun BuildNavigationGraph() {
     ) {
         composable(Screen.Home.route) { HomeScreen(navController) }
         composable(Screen.Schedule.route) { ScheduleScreen(navController) }
-        composable(Screen.Saved.route) { SavedWorkoutsScreen(navController) }
+        composable(Screen.Saved.route) { SavedExerciseTopLevel(navController) }
+        composable(Screen.AddExercise.route){ AddNewExerciseTopLevel(navController) }
     }
 }
 
