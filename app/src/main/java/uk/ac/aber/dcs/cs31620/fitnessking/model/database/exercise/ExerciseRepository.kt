@@ -5,7 +5,7 @@ import android.app.Application
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.Injection
 
 class ExerciseRepository(application: Application) {
-    private val exerciseDao = Injection.getExerciseDatabase(application).exerciseDao()
+    private val exerciseDao = Injection.getDatabase(application).exerciseDao()
     // Exercise CRUD Functions
     fun getAllExercises() = exerciseDao.getAllExercises()
 

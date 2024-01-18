@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,6 +65,7 @@ fun AddNewExerciseTopLevel(
  * This function is the screen itself, it has a scaffold of all the required information for the exercises
  * which is then passed through each individual box for the user to update.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddNewExercise(
     navController: NavController,

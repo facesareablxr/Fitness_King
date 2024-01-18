@@ -2,11 +2,15 @@ package uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout
 
 
 import android.app.Application
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
+import kotlinx.coroutines.Dispatchers
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.Injection
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
 import java.time.DayOfWeek
 
 class WorkoutRepository(application: Application) {
-    private val workoutDao = Injection.getWorkoutDatabase(application).workoutDao()
+    val workoutDao = Injection.getDatabase(application).workoutDao()
 
     fun getAllWorkouts() = workoutDao.getAllWorkouts()
 
@@ -15,4 +19,10 @@ class WorkoutRepository(application: Application) {
     fun insertWorkout(workout: WorkoutEntity) = workoutDao.insertWorkout(workout)
 
     fun updateWorkout(workout: WorkoutEntity) = workoutDao.updateWorkout(workout)
+    fun getExercisesForWorkout(): LiveData<List<ExerciseEntity>> {
+        return liveData(Dispatchers.IO) {
+            emit(workoutDao.getAllExercises())
+        }
+    }
+
 }

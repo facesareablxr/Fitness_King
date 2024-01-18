@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.model.database
+package uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise
 
 import androidx.room.TypeConverter
 

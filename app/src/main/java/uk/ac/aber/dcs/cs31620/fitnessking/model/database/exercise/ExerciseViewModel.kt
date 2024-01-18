@@ -27,10 +27,7 @@ class ExerciseViewModel(application: Application) : AndroidViewModel(application
         repository.deleteExercise(exercise)
     }
     // Function to calculate the length of the workout, from the list of exercises
-    fun calculateLength(selectedExerciseIds: List<Int>, exerciseDao: ExerciseDao): Int {
-        val selectedExercises = selectedExerciseIds.map { exerciseDao.getExerciseById(it) }
-        return selectedExercises.sumOf { it.length }
-    }
+
 
 
 }

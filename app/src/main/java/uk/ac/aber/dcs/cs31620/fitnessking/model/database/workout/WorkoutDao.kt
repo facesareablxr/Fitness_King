@@ -1,11 +1,9 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercises
 
 /**
  * Dao interface for the workouts, handles the manipulation of data
@@ -28,4 +26,15 @@ interface WorkoutDao {
     // Deletes a workout from the table
     @Delete
     fun deleteWorkout(workout: WorkoutEntity)
+
+    @Query("SELECT * FROM exercises WHERE exerciseId IN (:exerciseIds)")
+    fun getExercisesByIds(exerciseIds: List<Int>): List<ExerciseEntity>
+
+    @Transaction
+    @Query("SELECT exercises.exerciseId, exercises.name, exercises.sets, exercises.reps, exercises.weight, exercises.isDropSet, exercises.image FROM exercises INNER JOIN workoutwithexercises ON exercises.exerciseId = workoutwithexercises.exerciseId WHERE workoutwithexercises.workoutId = :workoutId")
+    suspend fun getExercisesForWorkout(workoutId: Int): List<ExerciseEntity>
+
+    @Query("SELECT * FROM exercises")
+    suspend fun getAllExercises(): List<ExerciseEntity>
+
 }

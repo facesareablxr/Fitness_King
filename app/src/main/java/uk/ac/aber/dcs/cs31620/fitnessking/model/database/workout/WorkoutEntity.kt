@@ -1,11 +1,13 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout
 
 import androidx.room.Entity
-import androidx.room.Ignore
+import androidx.room.Junction
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import androidx.room.TypeConverters
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.ExerciseIdsConverter
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseIdsConverter
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercises
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
 
@@ -21,14 +23,3 @@ data class WorkoutEntity(
     var focus: Focus = Focus.Arms,
     var length: Int = 0,
 )
-    @Ignore var exerciseEntities: List<ExerciseEntity> = emptyList()
-
-/*    fun calculateTotalLength(exerciseDao: ExerciseDao): Int {
-        // Fetch exercises if not already populated
-        if (exerciseEntities.isEmpty()) {
-            exerciseEntities = getExercises(exerciseDao)
-        }*//*
-
-        // Calculate total length
-        return exerciseEntities.sumOf { it.length }
-    }*/

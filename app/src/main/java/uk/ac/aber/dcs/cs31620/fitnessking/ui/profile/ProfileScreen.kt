@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutViewModel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.home.HomeScreenContent
@@ -35,10 +36,7 @@ fun ProfileScreen(
                         .padding(innerPadding)
                         .fillMaxSize()
                 ) {
-                    HomeScreenContent(
-                        modifier = Modifier.padding(8.dp),
 
-                        )
                 }
             }
         )
