@@ -12,17 +12,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.TopLevelScaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.lifecycle.viewmodel.compose.viewModel
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutViewModel
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.editing.ExerciseCard
 import java.time.LocalDate
 
 /**
@@ -55,35 +56,36 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeScreenContent(modifier: Modifier = Modifier, workoutViewModel: WorkoutViewModel) {
-   Column(modifier = Modifier.padding(8.dp)) {
+fun HomeScreenContent(modifier: Modifier, workoutViewModel: WorkoutViewModel) {
+   Column(modifier = modifier.padding(8.dp)) {
             val currentDayCaps = LocalDate.now().dayOfWeek.name
             val currentDay = currentDayCaps.lowercase().replaceFirstChar { it.uppercase() }
             Text(
                 text = currentDay,
                 style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier
+                modifier = modifier
                     .padding(bottom = 16.dp)
                     .align(CenterHorizontally)
             )
-       WorkoutCardForToday(workoutViewModel = workoutViewModel)
+       WorkoutCardForToday(workoutViewModel = workoutViewModel, modifier = modifier)
     }
 }
 
 @Composable
 fun WorkoutCardForToday(
     workoutViewModel: WorkoutViewModel,
-   // onStartWorkout: () -> Unit,
-    //modifier: Modifier = Modifier
+    modifier: Modifier
 ) {
-    val currentWorkout = workoutViewModel.currentWorkout.value
+    val currentWorkout by workoutViewModel.currentWorkout.observeAsState()
+
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
+
     ) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
@@ -92,32 +94,36 @@ fun WorkoutCardForToday(
                     text = "Your workout for today:",
                     style = MaterialTheme.typography.headlineLarge
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                // Display exercises for the workout here
-            } else {
-                Text(
-                    text = "No workout scheduled for today.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = { /* Handle random workout suggestion */ },
-                    modifier = Modifier.align(CenterHorizontally)
-                ) {
-                    Text("Suggest a random workout")
+                Spacer(modifier = modifier.height(8.dp))
+
+                // Display exercises in individual cards
+                val exercises by workoutViewModel.getExercisesForWorkout(currentWorkout!!)
+                    .observeAsState()
+                if (exercises != null) {
+                    if (exercises!!.isNotEmpty()) {
+                        exercises!!.forEach { exercise ->
+                           // ExerciseCard(exercise = exercise)
+                        }
+                    } else {
+                        Text(
+                            text = "No exercises scheduled for today.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                } else {
+                    Text(
+                        text = "No workout scheduled for today.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = { /* Handle random workout suggestion */ },
+                        modifier = Modifier.align(CenterHorizontally)
+                    ) {
+                        Text("Suggest a random workout")
+                    }
                 }
             }
         }
-    }
-}
-
-
-
-@Preview
-@Composable
-private fun HomeScreenPreview(){
-    val navController = rememberNavController()
-    FitnessKingTheme(dynamicColor = false) {
-        HomeScreen(navController)
     }
 }

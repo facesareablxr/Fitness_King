@@ -1,7 +1,5 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.ui.util
 
-import androidx.room.PrimaryKey
-
 data class ExerciseSearch(
     var name: String = "",
     var sets: Int = 0,

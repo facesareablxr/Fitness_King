@@ -14,4 +14,8 @@ class ExerciseRepository(application: Application) {
     fun updateExercise(exercise: ExerciseEntity) = exerciseDao.updateExercise(exercise)
 
     fun deleteExercise(exercise: ExerciseEntity) = exerciseDao.deleteExercise(exercise)
+
+    fun getExerciseById(exerciseId: Int): ExerciseEntity {
+        return exerciseDao.getExerciseById(exerciseId)
+    }
 }

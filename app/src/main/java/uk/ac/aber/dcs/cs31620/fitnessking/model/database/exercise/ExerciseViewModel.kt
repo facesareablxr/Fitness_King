@@ -26,8 +26,9 @@ class ExerciseViewModel(application: Application) : AndroidViewModel(application
     fun deleteExercise(exercise: ExerciseEntity) {
         repository.deleteExercise(exercise)
     }
-    // Function to calculate the length of the workout, from the list of exercises
 
-
+    fun getExerciseById(exerciseId: Int): ExerciseEntity {
+        return repository.getExerciseById(exerciseId)
+    }
 
 }

@@ -56,7 +56,7 @@ fun AddNewExerciseTopLevel(
     AddNewExercise(
         navController = navController,
         insertExercise = { exercise ->
-            exerciseViewModel.insertExercise(exercise) // Return result directly
+            exerciseViewModel.insertExercise(exercise)
         }
     )
 }
@@ -355,16 +355,4 @@ fun AddExerciseButton(
             }
         }
     )
-}
-
-/**
- * This is just the preview of the screen
- */
-@Preview
-@Composable
-private fun AddNewWorkoutPreview(){
-    val navController = rememberNavController()
-    FitnessKingTheme(dynamicColor = false) {
-        AddNewExerciseTopLevel(navController)
-    }
 }
