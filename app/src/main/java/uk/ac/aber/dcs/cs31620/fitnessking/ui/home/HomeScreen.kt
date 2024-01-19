@@ -21,9 +21,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.lifecycle.viewmodel.compose.viewModel
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutViewModel
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.editing.ExerciseCard
 import java.time.LocalDate
 
 /**

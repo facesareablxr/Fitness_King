@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.ui.editing
+package uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -30,7 +30,7 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.ExerciseNameInput
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.RepsInput
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.SetsInput
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.WeightInput
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.AddExerciseTopAppBar
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.SmallTopAppBar
 
 @Composable
 fun EditExerciseTopLevel(
@@ -69,7 +69,7 @@ fun EditExercise(
 
     Scaffold(
         topBar = {
-            AddExerciseTopAppBar(navController) //This app bar is different to the main one, it will allow the user to go back on themselves
+            SmallTopAppBar(navController, "Edit Exercise") //This app bar is different to the main one, it will allow the user to go back on themselves
         },
         content = { innerPadding ->
             Column(

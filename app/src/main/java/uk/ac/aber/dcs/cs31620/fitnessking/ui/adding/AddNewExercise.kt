@@ -18,19 +18,16 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseViewModel
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.AddExerciseTopAppBar
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.util.AddNewImage
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.SmallTopAppBar
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.util.OutlinedTextFieldWithKeyboardDismiss
 
 /**
@@ -85,7 +82,7 @@ fun AddNewExercise(
     //Scaffold for the screen itself
     Scaffold(
         topBar = {
-            AddExerciseTopAppBar(navController) //This app bar is different to the main one, it will allow the user to go back on themselves
+            SmallTopAppBar(navController, title = "Add Exercise") //This app bar is different to the main one, it will allow the user to go back on themselves
         },
         content = { innerPadding ->
             Column(

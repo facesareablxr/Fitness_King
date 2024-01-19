@@ -15,7 +15,7 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.AddNewExerciseTopLevel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.home.HomeScreen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.editing.SavedExerciseTopLevel
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling.SavedExerciseTopLevel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule.ScheduleScreenTopLevel
 
 /**

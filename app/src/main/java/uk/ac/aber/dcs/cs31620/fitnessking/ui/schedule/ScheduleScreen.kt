@@ -99,12 +99,12 @@ fun WorkoutCard(workout: WorkoutEntity, exercises: LiveData<List<ExerciseEntity>
             Spacer(modifier = Modifier.height(8.dp))
 
             // Display associated exercises
-            Text(exercises?.value?.joinToString { it.name } ?: "", color = Color.Gray)
+            Text(exercises.value?.joinToString { it.name } ?: "", color = Color.Gray)
 
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Focus: ${workout.focus}", color = Color.Gray)
             Spacer(modifier = Modifier.height(16.dp))
-            //ExerciseImage(imageRes = workout.exerciseImageRes)
+            //ExerciseImage(imageRes = workout.)
         }
     }
 }

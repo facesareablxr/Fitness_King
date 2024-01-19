@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.ui.editing
+package uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -37,9 +36,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -142,11 +141,13 @@ fun ExerciseCard(
     exercise: ExerciseEntity,
     navController: NavHostController
 ) {
+    val showDialog = remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable {},
+            .clickable { showDialog.value = true },
         shape = RoundedCornerShape(8.dp),
     ) {
         Row(
@@ -158,86 +159,65 @@ fun ExerciseCard(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(MaterialTheme.shapes.small)
+
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Column {
-                Text(text = exercise.name, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Sets: ${exercise.sets}, Reps: ${exercise.reps}")
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Weight: ${exercise.weight}")
-                if (exercise.isDropSet) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Drop Set", color = Color.Red)
-                }
-            }
-            CardClickable(exercise = exercise, navController = navController)
+            Text(
+                text = exercise.name,
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center
+            )
         }
-    }
-}
 
-@Composable
-fun CardClickable(
-    exercise: ExerciseEntity,
-    navController: NavHostController
-) {
-    val showDialog = remember { mutableStateOf(false) }
-
-    TextButton(onClick = {
-        showDialog.value = true
-    }) {
-        // ... button content
-    }
-    if (showDialog.value) {
-        AlertDialog(
-           // onDismissRequest = { onDismiss() },
-            title = { Text(text = exercise.name) },
-            text = {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(model = exercise.image),
-                        contentDescription = exercise.name,
-                        modifier = Modifier
-                            .size(56.dp)
-                            .clip(MaterialTheme.shapes.small)
+        if (showDialog.value) {
+            AlertDialog(
+                onDismissRequest = { showDialog.value = false },
+                title = {
+                    Text(
+                        text = exercise.name,
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
+                },
+                text = {
                     Column {
-                        Text(text = exercise.name, fontWeight = FontWeight.Bold)
+                        Text(text = "Sets: ${exercise.sets}")
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "Sets: ${exercise.sets}, Reps: ${exercise.reps}")
+                        Text(text = "Reps: ${exercise.reps}")
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(text = "Weight: ${exercise.weight}")
+                        Spacer(modifier = Modifier.height(8.dp))
                         if (exercise.isDropSet) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = "Drop Set", color = Color.Red)
+                            Text(text = "Drop Set")
                         }
                     }
-                }
-            },
-            buttons = {
-                TextButton(onClick = { onDismiss() }) {
-                    Text("Close")
-                }
-                TextButton(onClick = {
-                    // Handle navigation to the EditExercise screen or any other action
-                    navController.navigate(Screen.EditExercise.route)
-                    onDismiss()
-                }) {
-                    Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit")
-                    Text("Edit")
-                }
-            },
-            modifier = Modifier
-                .height(IntrinsicSize.Max)
-                .fillMaxWidth()
-                .wrapContentHeight(align = Alignment.Bottom) // Align to bottom
-        )
+                },
+                buttons = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        TextButton(onClick = { showDialog.value = false }) {
+                            Text("Close")
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        TextButton(onClick = {
+                            navController.navigate(Screen.EditExercise.route)
+                            showDialog.value = false
+                        }) {
+                            Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit")
+                            Text("Edit")
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .height(IntrinsicSize.Max)
+                    .fillMaxWidth()
+                    .wrapContentHeight(align = Alignment.Bottom)
+            )
+        }
     }
 }

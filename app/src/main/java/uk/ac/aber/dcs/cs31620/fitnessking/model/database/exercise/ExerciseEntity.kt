@@ -1,5 +1,6 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -10,11 +11,13 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "exercises")
 data class ExerciseEntity(
-    @PrimaryKey(autoGenerate = true) val exerciseId: Int = 0,
+    @PrimaryKey(autoGenerate = true)
+    val exerciseId: Int = 0,
     val name: String = "",
     val sets: Int = 0,
     val reps: Int = 0,
     val weight: Int = 0,
     val isDropSet: Boolean = false,
-    val image: String = ""
+    @ColumnInfo(name = "main_image_path")
+    var image: String = ""
 )

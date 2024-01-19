@@ -13,7 +13,7 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.util.ResourceUtil
 import java.io.File
 import java.io.IOException
 
-private fun PictureFromCamera(
+private fun pictureFromCamera(
     resultLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
     updateFile: (File) -> Unit,
     context: Context

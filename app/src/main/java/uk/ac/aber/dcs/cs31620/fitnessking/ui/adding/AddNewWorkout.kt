@@ -18,13 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.SmallTopAppBar
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseViewModel
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.ButtonSpinner
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.AddWorkoutTopAppBar
 
 @Composable
 fun AddNewWorkout(
@@ -65,7 +65,7 @@ fun AddNewWorkout(
         },
         // Separated top app bar, under appbars package
         topBar = {
-            AddWorkoutTopAppBar(navController)
+            SmallTopAppBar(navController, title = "Add Workout" )
         }
     ) { innerPadding ->
         Column(

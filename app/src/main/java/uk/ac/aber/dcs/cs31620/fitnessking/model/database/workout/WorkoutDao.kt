@@ -31,7 +31,7 @@ interface WorkoutDao {
     fun getExercisesByIds(exerciseIds: List<Int>): List<ExerciseEntity>
 
     @Transaction
-    @Query("SELECT exercises.exerciseId, exercises.name, exercises.sets, exercises.reps, exercises.weight, exercises.isDropSet, exercises.image FROM exercises INNER JOIN workoutwithexercises ON exercises.exerciseId = workoutwithexercises.exerciseId WHERE workoutwithexercises.workoutId = :workoutId")
+    @Query("SELECT exercises.exerciseId, exercises.name, exercises.sets, exercises.reps, exercises.weight, exercises.isDropSet, exercises.main_image_path FROM exercises INNER JOIN workoutwithexercises ON exercises.exerciseId = workoutwithexercises.exerciseId WHERE workoutwithexercises.workoutId = :workoutId")
     suspend fun getExercisesForWorkout(workoutId: Int): List<ExerciseEntity>
 
     @Query("SELECT * FROM exercises")
