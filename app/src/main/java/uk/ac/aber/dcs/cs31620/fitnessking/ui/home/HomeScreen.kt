@@ -113,7 +113,7 @@ fun WorkoutCardForEachExercise(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    ExerciseCard(exercise = exercise, navController = navController)
+                    //ExerciseCard(exercise = exercise, navController = navController)
                 }
             }
         }
