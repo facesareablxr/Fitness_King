@@ -51,13 +51,16 @@ abstract class AllDao {
 
     @Query("SELECT * FROM workouts WHERE day = :currentDay")
     abstract fun getCurrentWorkout(currentDay: DayOfWeek): WorkoutEntity?
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT * FROM workouts JOIN workoutwithexercises ON workouts.workoutId = workoutwithexercises.workout_Id JOIN exercises ON workoutwithexercises.exercise_Id = exercises.exerciseId")
+    abstract fun loadAllWorkoutsWithExercises(): Map<WorkoutEntity, List<ExerciseEntity>>
 
-    @Transaction
-    @Query("SELECT * FROM workouts WHERE workoutId = :workoutId")
-    abstract fun getWorkoutWithExercises(workoutId: Long): LiveData<WorkoutWithExercises>
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT workouts.workoutId, workouts.day, workouts.focus, workouts.length, workouts.restTime, exercises.exerciseId, exercises.name, exercises.sets, exercises.reps, exercises.weight, exercises.isDropSet, exercises.image, exercises.isFavourite, exercises.length FROM workouts JOIN workoutwithexercises ON workouts.workoutId = workoutwithexercises.workout_Id JOIN exercises ON workoutwithexercises.exercise_Id = exercises.exerciseId WHERE workouts.workoutId = :workoutId")
+    abstract fun loadWorkoutWithExercisesById(workoutId: Long): Map<WorkoutEntity, List<ExerciseEntity>>
 
-    @Transaction
-    @Query("SELECT * FROM exercises WHERE exerciseId IN (SELECT exerciseId FROM workoutwithexercises WHERE workout_Id = :workoutId)")
-    abstract fun getExercisesForWorkout(workoutId: Long): LiveData<List<ExerciseEntity>>
+    @RewriteQueriesToDropUnusedColumns
+    @Query("SELECT exercises.* FROM workoutwithexercises JOIN exercises ON workoutwithexercises.exercise_Id = exercises.exerciseId WHERE workoutwithexercises.workout_Id = :workoutId")
+    abstract fun loadExercisesForWorkout(workoutId: Long): List<ExerciseEntity>
 
 }

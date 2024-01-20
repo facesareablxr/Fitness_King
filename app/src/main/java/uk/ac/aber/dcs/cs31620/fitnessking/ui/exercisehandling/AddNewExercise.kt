@@ -353,10 +353,8 @@ fun AddExerciseButton(
                 showSnackbar = true
 
                 if (exerciseAdded) {
-                    navController.navigateUp()  // Navigate up on success
+                    navController.navigateUp()
                 }
-            } else {
-                // Highlight input fields with errors will be added as flare, if time
             }
         },
         content = {

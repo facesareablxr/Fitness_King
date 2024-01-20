@@ -7,15 +7,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercises
 
 
 class WorkoutViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: WorkoutRepository = WorkoutRepository(application)
+    private
 
-    var workoutList: LiveData<List<WorkoutEntity>> = repository.getAllWorkouts()
-        private set
+    val repository: WorkoutRepository = WorkoutRepository(application)
+
+    private val _workoutList = MutableLiveData<List<WorkoutEntity>>()
+    val workoutList: LiveData<List<WorkoutEntity>> = _workoutList
 
     fun insertWorkout(newWorkout: WorkoutEntity) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -23,22 +25,56 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    private val _currentWorkout = MutableLiveData<WorkoutEntity?>()
-    val currentWorkout: LiveData<WorkoutEntity?> = _currentWorkout
-
-    fun fetchCurrentWorkout() = viewModelScope.launch {
-        _currentWorkout.value = repository.getCurrentWorkout()
-    }
-
-    private val _allWorkoutsWithExercises = MutableLiveData<List<WorkoutWithExercises>>(emptyList())
-    val allWorkoutsWithExercises: LiveData<List<WorkoutWithExercises>> = _allWorkoutsWithExercises
-
-    fun fetchAllWorkoutsWithExercises() = viewModelScope.launch {
-        _allWorkoutsWithExercises.value = repository.getAllWorkoutsWithExercises().value
-    }
-
     fun updateWorkout(workout: WorkoutEntity) {
-        repository.updateWorkout(workout)
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateWorkout(workout)
+        }
+    }
+
+    private val _allWorkoutsWithExercises = MutableLiveData<Map<WorkoutEntity, List<ExerciseEntity>>>()
+    val allWorkoutsWithExercises: LiveData<Map<WorkoutEntity, List<ExerciseEntity>>> = _allWorkoutsWithExercises
+
+    private val _workoutWithExercises = MutableLiveData<Map<WorkoutEntity, List<ExerciseEntity>>>()
+    val workoutWithExercises: LiveData<Map<WorkoutEntity, List<ExerciseEntity>>> = _workoutWithExercises
+
+    private val _exercisesForWorkout = MutableLiveData<List<ExerciseEntity>>()
+    val exercisesForWorkout: LiveData<List<ExerciseEntity>> = _exercisesForWorkout
+
+    init {
+        loadAllWorkoutsWithExercises()
+    }
+
+    private fun loadAllWorkoutsWithExercises() = viewModelScope.launch(Dispatchers.IO) {
+        val result = repository.loadAllWorkoutsWithExercises()
+        withContext(Dispatchers.Main) {
+            _allWorkoutsWithExercises.value = result
+        }
+    }
+
+    fun loadWorkoutWithExercisesById(workoutId: Long) = viewModelScope.launch(Dispatchers.IO) {
+        val result = repository.loadWorkoutWithExercisesById(workoutId)
+        withContext(Dispatchers.Main) {
+            _workoutWithExercises.value = result
+        }
+    }
+
+    fun loadExercisesForWorkout(workoutId: Long) = viewModelScope.launch(Dispatchers.IO) {
+        val result = repository.loadExercisesForWorkout(workoutId)
+        withContext(Dispatchers.Main) {
+            _exercisesForWorkout.value = result
+        }
+    }
+
+    fun getExercisesForWorkout(workoutId: Long): LiveData<List<ExerciseEntity>> {
+        val exercisesLiveData = MutableLiveData<List<ExerciseEntity>>()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = repository.loadExercisesForWorkout(workoutId)
+            withContext(Dispatchers.Main) {
+                exercisesLiveData.value = result
+            }
+        }
+        return exercisesLiveData
     }
 
 }

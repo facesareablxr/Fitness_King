@@ -1,6 +1,7 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
@@ -8,7 +9,9 @@ import androidx.room.PrimaryKey
  * table
  * @author Lauren Davis
  */
-@Entity(tableName = "exercises")
+@Entity(
+    tableName = "exercises"
+)
 data class ExerciseEntity(
     @PrimaryKey(autoGenerate = true) val exerciseId: Int = 0,
     val name: String = "",

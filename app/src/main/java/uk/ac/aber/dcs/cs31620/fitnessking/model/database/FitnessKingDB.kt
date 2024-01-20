@@ -35,7 +35,7 @@ abstract class FitnessKingDB : RoomDatabase(), FitnessRDB {
         fun getDatabase(context: Context): FitnessKingDB {
             if (instance == null) {
                 instance =
-                    Room.databaseBuilder<FitnessKingDB>(
+                    Room.databaseBuilder(
                         context.applicationContext,
                         FitnessKingDB::class.java,
                         "FitnessKingDB"
@@ -53,7 +53,7 @@ abstract class FitnessKingDB : RoomDatabase(), FitnessRDB {
                     super.onCreate(db)
 
                     coroutineScope.launch {
-                        populateDatabase(context, getDatabase(context)!!)
+                        populateDatabase(context, getDatabase(context))
                     }
                 }
             }

@@ -1,6 +1,5 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +23,6 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.FilterList
@@ -41,7 +39,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -241,8 +238,7 @@ fun SavedExerciseContent(
         items(filteredExercises) { exercise ->
             ExerciseCard(
                 exercise = exercise,
-                navController = navController,
-                onFavouriteClicked = onFavouriteClicked
+                navController = navController
             )
         }
     }
@@ -257,58 +253,51 @@ fun SavedExerciseContent(
  */
 @Composable
 fun ExerciseCard(
-    exercise: ExerciseEntity,
-    navController: NavHostController,
-    onFavouriteClicked: (ExerciseEntity) -> Unit,
+    exercise: ExerciseEntity, // Expect a single exercise entity
+    navController: NavHostController
 ) {
-    val showDialog = remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable { showDialog.value = true },
+            .clickable { showDialog = true },
         shape = RoundedCornerShape(8.dp),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column {
+            Column(
+                modifier = Modifier.weight(1f) // Allow text to expand
+            ) {
                 Text(
                     text = exercise.name,
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.bodyMedium
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "Sets: ${exercise.sets} | Reps: ${exercise.reps} | Weight: ${exercise.weight}",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Sets: ${exercise.sets}, Reps: ${exercise.reps}, Weight: ${exercise.weight}",
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = {
-                onFavouriteClicked(exercise)
-            }) {
+            Spacer(modifier = Modifier.width(16.dp))
+            IconButton(onClick = { /* Handle favourite click */ }) {
                 Icon(
                     imageVector = if (exercise.isFavourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                     contentDescription = "Favourite"
                 )
             }
-
         }
-        // This is where the dialog box is created, showing all the exercise information and allowing the user
-        // to select to continue on to edit the exercise.
-        if (showDialog.value) {
+
+        if (showDialog) {
             AlertDialog(
-                onDismissRequest = { showDialog.value = false },
+                onDismissRequest = { showDialog = false },
                 title = {
                     Text(
                         text = exercise.name,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.headlineMedium,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 },
@@ -331,17 +320,14 @@ fun ExerciseCard(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     ) {
-                        TextButton(onClick = { showDialog.value = false }) {
+                        TextButton(onClick = { showDialog = false }) {
                             Text("Close")
                         }
-                        Spacer(modifier = Modifier.weight(1f))
+                        Spacer(modifier = Modifier.width(8.dp))
                         TextButton(onClick = {
-                            navController.navigate(
-                                Screen.EditExercise.route
-                            )
-                            showDialog.value = false
+                            navController.navigate(Screen.EditExercise.route)
+                            showDialog = false
                         }) {
-                            Icon(imageVector = Icons.Filled.Edit, contentDescription = "Edit")
                             Text("Edit")
                         }
                     }

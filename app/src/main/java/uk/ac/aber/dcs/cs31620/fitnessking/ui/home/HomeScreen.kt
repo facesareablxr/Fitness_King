@@ -21,13 +21,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.lifecycle.viewmodel.compose.viewModel
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutViewModel
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling.ExerciseCard
 import java.time.LocalDate
 
-/**
- * Represents the home screen, has individual cards for each exercise for the current day.
- * @author Lauren Davis
- */
 @Composable
 fun HomeScreen(
     navController: NavHostController,
@@ -46,86 +44,78 @@ fun HomeScreen(
             ) {
                 HomeScreenContent(
                     modifier = Modifier.padding(8.dp),
-                    workoutViewModel = workoutViewModel
-                    )
+                    workoutViewModel = workoutViewModel,
+                    navController
+                )
             }
         }
     )
 }
 
 @Composable
-fun HomeScreenContent(modifier: Modifier, workoutViewModel: WorkoutViewModel) {
-   Column(modifier = modifier.padding(8.dp)) {
-            val currentDayCaps = LocalDate.now().dayOfWeek.name
-            val currentDay = currentDayCaps.lowercase().replaceFirstChar { it.uppercase() }
+fun HomeScreenContent(modifier: Modifier, workoutViewModel: WorkoutViewModel, navController: NavHostController) {
+    val todaysWorkoutWithExercises by workoutViewModel.workoutWithExercises.observeAsState()
+
+    Column(modifier = modifier.padding(8.dp)) {
+        val currentDayCaps = LocalDate.now().dayOfWeek.name
+        val currentDay = currentDayCaps.lowercase().replaceFirstChar { it.uppercase() }
+        Text(
+            text = currentDay,
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = modifier
+                .padding(bottom = 16.dp)
+                .align(CenterHorizontally)
+        )
+
+        if (todaysWorkoutWithExercises != null) {
+            val workout = todaysWorkoutWithExercises!!.keys.first()
+            val exercises = todaysWorkoutWithExercises!![workout]!!
+            WorkoutCardForEachExercise(exercises, modifier, navController)
+        } else {
+            // Handle the case where there's no workout for today
             Text(
-                text = currentDay,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = modifier
-                    .padding(bottom = 16.dp)
-                    .align(CenterHorizontally)
+                text = "No workout scheduled for today.",
+                style = MaterialTheme.typography.bodyMedium
             )
-       //WorkoutCardForToday(workoutViewModel = workoutViewModel, modifier = modifier)
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = { /* Handle random workout suggestion */ },
+                modifier = Modifier.align(CenterHorizontally)
+            ) {
+                Text("Suggest a random workout")
+            }
+        }
     }
 }
 
-/*
 @Composable
-fun WorkoutCardForToday(
-    workoutViewModel: WorkoutViewModel,
-    modifier: Modifier
+fun WorkoutCardForEachExercise(
+    exercises: List<ExerciseEntity>,
+    modifier: Modifier,
+    navController: NavHostController
 ) {
-    val currentWorkout by workoutViewModel.currentWorkout.observeAsState()
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-
-    ) {
-        Column(
-            modifier = modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-        ) {
-            if (currentWorkout != null) {
-                Text(
-                    text = "Your workout for today:",
-                    style = MaterialTheme.typography.headlineLarge
-                )
-                Spacer(modifier = modifier.height(8.dp))
-
-
-                workoutViewModel.currentWorkout.observe() { workout ->
-                    val exercises = workout?.exercises
-                if (exercises != null) {
-                    if (exercises!!.isNotEmpty()) {
-                        exercises!!.forEach { exercise ->
-                           // ExerciseCard(exercise = exercise)
-                        }
-                    } else {
-                        Text(
-                            text = "No exercises scheduled for today.",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                } else {
+    Column(modifier = modifier) {
+        for (exercise in exercises) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                // Title for each exercise card
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
                     Text(
-                        text = "No workout scheduled for today.",
+                        text = "Exercise: ${exercise.name}",
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = { */
-/* Handle random workout suggestion *//*
- },
-                        modifier = Modifier.align(CenterHorizontally)
-                    ) {
-                        Text("Suggest a random workout")
-                    }
+
+                    ExerciseCard(exercise = exercise, navController = navController)
                 }
             }
         }
     }
 }
-*/

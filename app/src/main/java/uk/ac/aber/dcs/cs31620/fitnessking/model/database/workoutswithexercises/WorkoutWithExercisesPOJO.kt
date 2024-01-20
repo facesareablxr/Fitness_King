@@ -13,7 +13,7 @@ data class WorkoutWithExercisesPOJO(
         entity = ExerciseEntity::class,
         parentColumn = "workoutId",
         entityColumn = "exerciseId",
-        associateBy = Junction(WorkoutWithExercises::class,parentColumn = "workout_id",entityColumn = "exercise_id")
+        associateBy = Junction(WorkoutWithExercises::class,parentColumn = "workoutId",entityColumn = "exerciseId")
     )
     val exercises: List<ExerciseEntity>
 )

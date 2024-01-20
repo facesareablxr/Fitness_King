@@ -10,8 +10,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.FitnessKingDB
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseDao
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutDao
 
 @ExperimentalCoroutinesApi
 

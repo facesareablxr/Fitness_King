@@ -22,14 +22,12 @@ class WorkoutRepository(application: Application) {
 
     fun updateWorkout(workout: WorkoutEntity) = allDao.updateWorkout(workout)
 
-    fun getAllWorkoutsWithExercises(): LiveData<List<WorkoutWithExercises>> =
-        allDao.getAllWorkoutsWithExercises()
+    fun loadAllWorkoutsWithExercises(): Map<WorkoutEntity, List<ExerciseEntity>> =
+        allDao.loadAllWorkoutsWithExercises()
 
-    fun getWorkoutWithExercises(workoutId: Long): LiveData<WorkoutWithExercises> {
-        return allDao.getWorkoutWithExercises(workoutId)
-    }
+    fun loadWorkoutWithExercisesById(workoutId: Long): Map<WorkoutEntity, List<ExerciseEntity>> =
+        allDao.loadWorkoutWithExercisesById(workoutId)
 
-    fun getExercisesForWorkout(workoutId: Long): LiveData<List<ExerciseEntity>> {
-        return allDao.getExercisesForWorkout(workoutId)
-    }
+    fun loadExercisesForWorkout(workoutId: Long): List<ExerciseEntity> =
+        allDao.loadExercisesForWorkout(workoutId)
 }
