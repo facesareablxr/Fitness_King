@@ -1,9 +1,8 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercises
+import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
+import java.time.DayOfWeek
 
 /**
  * Dao interface for the workouts, handles the manipulation of data
@@ -11,30 +10,33 @@ import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.W
  */
 @Dao
 interface WorkoutDao {
-    // Gets all workouts from the database
-    @Query("""SELECT * FROM workouts""")
-    fun getAllWorkouts(): LiveData<List<WorkoutEntity>>
-    // Gets all workouts from the database for a specific day
-    @Query("""SELECT * FROM workouts WHERE day = :day""")
-    fun getWorkoutsForDay(day: java.time.DayOfWeek): List<WorkoutEntity>
+
     // Inserts a new workout into a database
     @Insert
-    fun insertWorkout(workout: WorkoutEntity)
-    // Updates a workout within the database
+    fun insertWorkout(workout: WorkoutEntity): Long
+
+    // Update an existing workout
     @Update
     fun updateWorkout(workout: WorkoutEntity)
-    // Deletes a workout from the table
+
+    // Delete a workout
     @Delete
     fun deleteWorkout(workout: WorkoutEntity)
 
-    @Query("SELECT * FROM exercises WHERE exerciseId IN (:exerciseIds)")
-    fun getExercisesByIds(exerciseIds: List<Int>): List<ExerciseEntity>
+    // Get all workouts
+    @Query("SELECT * FROM workouts")
+    fun getAllWorkouts(): List<WorkoutEntity>
 
-    @Transaction
-    @Query("SELECT exercises.exerciseId, exercises.name, exercises.sets, exercises.reps, exercises.weight, exercises.isDropSet, exercises.main_image_path FROM exercises INNER JOIN workoutwithexercises ON exercises.exerciseId = workoutwithexercises.exerciseId WHERE workoutwithexercises.workoutId = :workoutId")
-    suspend fun getExercisesForWorkout(workoutId: Int): List<ExerciseEntity>
+    // Gets workouts by day
+    @Query("SELECT * FROM workouts WHERE day = :dayOfWeek")
+    fun getWorkoutsByDay(dayOfWeek: DaysOfWeek): List<WorkoutEntity>
 
-    @Query("SELECT * FROM exercises")
-    suspend fun getAllExercises(): List<ExerciseEntity>
+    // Gets workout for current day
+    @Query("""SELECT * FROM workouts WHERE day = :day""")
+    fun getWorkoutsForDay(day: DayOfWeek): List<WorkoutEntity>
+
+    // Gets days with workouts
+    @Query("SELECT DISTINCT day FROM workouts")
+    fun getDaysWithWorkouts(): List<DaysOfWeek>
 
 }

@@ -3,6 +3,9 @@ package uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 /**
  * ExerciseViewModel manages the exercises in the database, uses the Dao class
@@ -10,25 +13,37 @@ import androidx.lifecycle.LiveData
  */
 class ExerciseViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: ExerciseRepository = ExerciseRepository(application)
-    // LiveData for observing all exercises
-    val allExercises: LiveData<List<ExerciseEntity>> = repository.getAllExercises()
+    private val _exercises = MutableLiveData<List<ExerciseEntity>>()
+    val exercises: LiveData<List<ExerciseEntity>> = _exercises
 
-    // Function to insert a new exercise
-    fun insertExercise(exercise: ExerciseEntity): Boolean {
+    init {
+        refreshExercises()
+    }
+
+    private fun refreshExercises() {
+        viewModelScope.launch {
+            _exercises.value = repository.getAllExercises()
+        }
+    }
+
+    fun insertExercise(exercise: ExerciseEntity) = viewModelScope.launch {
         repository.insertExercise(exercise)
-        return true // Return result from repository
-    }
-    // Function to update an existing exercise
-    fun updateExercise(exercise: ExerciseEntity) {
-        repository.updateExercise(exercise)
-    }
-    // Function to delete an exercise
-    fun deleteExercise(exercise: ExerciseEntity) {
-        repository.deleteExercise(exercise)
+        refreshExercises()
     }
 
-    fun getExerciseById(exerciseId: Int): ExerciseEntity {
-        return repository.getExerciseById(exerciseId)
+    fun updateExercise(exercise: ExerciseEntity) = viewModelScope.launch {
+        repository.updateExercise(exercise)
+        refreshExercises()
+    }
+
+    fun deleteExercise(exercise: ExerciseEntity) = viewModelScope.launch {
+        repository.deleteExercise(exercise)
+        refreshExercises()
+    }
+
+    fun toggleFavorite(exerciseId: Int, isFavorite: Boolean) = viewModelScope.launch {
+        repository.toggleFavorite(exerciseId, isFavorite)
+        refreshExercises()
     }
 
 }

@@ -67,6 +67,7 @@ dependencies {
     implementation("androidx.databinding:adapters:3.2.0-alpha11")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.test:runner:1.5.2")
     platform("androidx.compose:compose-bom:2023.10.01")
 
     implementation("androidx.core:core-ktx:1.12.0")

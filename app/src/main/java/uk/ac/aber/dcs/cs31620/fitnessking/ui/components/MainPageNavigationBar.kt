@@ -1,5 +1,6 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Favorite
@@ -28,6 +29,7 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.screens
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun MainPageNavigationBar(navController: NavController) {
     val icons = mapOf(

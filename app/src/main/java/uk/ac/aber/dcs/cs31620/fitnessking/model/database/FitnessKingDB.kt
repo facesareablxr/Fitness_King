@@ -15,9 +15,10 @@ import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.E
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutDao
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercises
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercisesDao
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercisesCrossRef
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercisesDao
 
 /**
  * Class to initialise the whole FitnessKing database with all the different tables of information
@@ -79,11 +80,11 @@ abstract class FitnessKingDB : RoomDatabase(), FitnessRDB {
             // Exercises
             val exerciseDao = instance.exerciseDao()
             val exercises = listOf(
-                ExerciseEntity(name = "Push-ups", sets = 3, reps = 10, weight = 0, isDropSet = false, image = "${imagePath}pushup.jpg"),
-                ExerciseEntity(name = "Squats", sets = 4, reps = 12, weight = 0, isDropSet = false, image = "${imagePath}squat.png"),
-                ExerciseEntity(name = "Pull-ups", sets = 3, reps = 8, weight = 0, isDropSet = true, image = "${imagePath}pullup.jpg"),
-                ExerciseEntity(name = "Bench press", sets = 3, reps = 6, weight = 60, isDropSet = true, image = "${imagePath}benchpress.jpg"),
-                ExerciseEntity(name = "Rows", sets = 3, reps = 10, weight = 50, isDropSet = false, image = "${imagePath}row.jpg")
+                ExerciseEntity(name = "Push-ups", sets = 3, reps = 10, weight = 0, isDropSet = false, image = "${imagePath}pushup.jpg", isFavourite = false),
+                ExerciseEntity(name = "Squats", sets = 4, reps = 12, weight = 0, isDropSet = false, image = "${imagePath}squat.png", isFavourite = true),
+                ExerciseEntity(name = "Pull-ups", sets = 3, reps = 8, weight = 0, isDropSet = true, image = "${imagePath}pullup.jpg", isFavourite = false),
+                ExerciseEntity(name = "Bench press", sets = 3, reps = 6, weight = 60, isDropSet = true, image = "${imagePath}benchpress.jpg", isFavourite = false),
+                ExerciseEntity(name = "Rows", sets = 3, reps = 10, weight = 50, isDropSet = false, image = "${imagePath}row.jpg", isFavourite = true)
             )
 
             for (exercise in exercises) {
@@ -106,25 +107,25 @@ abstract class FitnessKingDB : RoomDatabase(), FitnessRDB {
             val workoutExercisesDao = instance.workoutWithExercisesDao()
 
             val workoutWithExercises = listOf(
-                WorkoutWithExercises(
+                WorkoutWithExercisesCrossRef(
                     workoutId = 1, // Monday workout
-                    exerciseId = listOf(1, 4)
+                    exerciseId = ExerciseIdsConverter().fromList(listOf(1, 4))
                 ),
-                WorkoutWithExercises(
+                WorkoutWithExercisesCrossRef(
                     workoutId = 2, // Wednesday workout
-                    exerciseId = listOf(2, 5)
+                    exerciseId = ExerciseIdsConverter().fromList(listOf(2, 5))
                 ),
-                WorkoutWithExercises(
+                WorkoutWithExercisesCrossRef(
                     workoutId = 3, // Thursday workout
-                    exerciseId = listOf(3)
+                    exerciseId = ExerciseIdsConverter().fromList(listOf(3,2))
                 ),
-                WorkoutWithExercises(
+                WorkoutWithExercisesCrossRef(
                     workoutId = 4, //Friday workout
-                    exerciseId = listOf(1,2,3,4)
+                    exerciseId = ExerciseIdsConverter().fromList(listOf(1,2,3,4))
                 )
             )
 
-            workoutExercisesDao.insertAll(*workoutWithExercises.toTypedArray()) //Adds all information to the workoutwithexercises table
+            workoutExercisesDao.insertWorkoutWithExercisesCrossRef(workoutWithExercises) //Adds all information to the workoutwithexercises table
         }
     }
 }

@@ -13,7 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +37,7 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutViewModel
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 
 
 /**
@@ -44,7 +48,7 @@ import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutViewMode
 @Composable
 fun ScheduleScreenTopLevel(
     navController: NavHostController,
-    workoutViewModel: WorkoutViewModel = viewModel()
+    workoutViewModel: WorkoutViewModel = viewModel(),
 ) {
     val workoutsList by workoutViewModel.workoutList.observeAsState(listOf())
 
@@ -54,13 +58,22 @@ fun ScheduleScreenTopLevel(
 @Composable
 fun ScheduleScreen(
     navController: NavHostController,
-    workoutsList: List<WorkoutEntity>
-){
+    workoutsList: List<WorkoutEntity>,
+) {
     val coroutineScope = rememberCoroutineScope()
 
     TopLevelScaffold(
         navController = navController,
         coroutineScope = coroutineScope,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate(Screen.AddWorkout.route)
+                }
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Add workout")
+            }
+        },
         pageContent = { innerPadding ->
             Surface(
                 modifier = Modifier
@@ -83,31 +96,40 @@ fun ScheduleScreen(
  * Cards for the workouts, will include the opportunity to click on them
  */
 @Composable
-fun WorkoutCard(workout: WorkoutEntity, exercises: LiveData<List<ExerciseEntity>>, onItemClick: () -> Unit) {
+fun WorkoutCard(
+    workout: WorkoutEntity,
+    exercises: List<ExerciseEntity>,
+    onItemClick: () -> Unit,
+) {
     Card(
-        modifier = Modifier.run {
-            fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .clickable(onClick = onItemClick)
-        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable(onClick = onItemClick),
         shape = RoundedCornerShape(8.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .padding(16.dp)
         ) {
             Text(text = workout.day.toString(), fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-
-            // Display associated exercises
-            Text(exercises.value?.joinToString { it.name } ?: "", color = Color.Gray)
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Focus: ${workout.focus}", color = Color.Gray)
+            Text(text = "Focus: ${workout.focus}")
             Spacer(modifier = Modifier.height(16.dp))
-            //ExerciseImage(imageRes = workout.)
+            Text(text = "Exercises:", fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            exercises.forEach { exercise ->
+                Text(
+                    text = "${exercise.name} - ${exercise.sets} sets x ${exercise.reps} reps @ ${exercise.weight} kg"
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+            }
         }
     }
 }
+
+
 
 /**
  * Function to add images in for the cards
@@ -131,7 +153,7 @@ fun ExerciseImage(imageRes: Int) {
 fun ScheduleScreenContent(
     workoutsList: List<WorkoutEntity>,
     onWorkoutClick: (WorkoutEntity) -> Unit,
-    viewModel: WorkoutViewModel
+    viewModel: WorkoutViewModel,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -139,12 +161,12 @@ fun ScheduleScreenContent(
             .padding(horizontal = 16.dp)
     ) {
         items(workoutsList) { workout ->
-            val exercises = viewModel.getExercisesForWorkout(workout)
+            val exercises by viewModel.getExercisesForWorkout(workout).observeAsState(listOf())
+
             WorkoutCard(
                 workout = workout,
-                exercises = exercises,
-                onItemClick = { onWorkoutClick(workout) }
-            )
+                exercises = exercises ?: emptyList()
+            ) { onWorkoutClick(workout) }
         }
     }
 }

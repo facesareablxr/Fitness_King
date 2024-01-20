@@ -1,6 +1,5 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -13,29 +12,29 @@ import androidx.room.Update
  */
 @Dao
 interface ExerciseDao {
-    /**
-     * General commands
-     */
-    // Adds a new exercise into the database
+
+    // Insert a new exercise
     @Insert
-    fun insertExercise(exercise: ExerciseEntity)
-    // Updates the exercise within the database
+    fun insertExercise(exercise: ExerciseEntity): Long
+
+    // Update an existing exercise
     @Update
     fun updateExercise(exercise: ExerciseEntity)
-    // Removes the exercise from the database
+
+    // Delete an exercise
     @Delete
     fun deleteExercise(exercise: ExerciseEntity)
 
-    /**
-     * Queries
-     */
-    // Gets all the exercises by their id
-    @Query("SELECT * FROM exercises WHERE exerciseId = :id")
-    fun getExerciseById(id: Int): ExerciseEntity
-    // Gets all exercises from the database as a LiveData object
+    // Get all exercises
     @Query("SELECT * FROM exercises")
-    fun getAllExercises(): LiveData<List<ExerciseEntity>>
+    fun getAllExercises(): List<ExerciseEntity>
 
+    // Get a specific exercise by ID
+    @Query("SELECT * FROM exercises WHERE exerciseId = :exerciseId")
+    fun getExerciseById(exerciseId: Int): ExerciseEntity?
+
+    // Toggle the favorite status of an exercise
+    @Query("UPDATE exercises SET isFavourite = :isFavourite WHERE exerciseId = :exerciseId")
+    fun toggleFavorite(exerciseId: Int, isFavourite: Boolean)
 
 }
-

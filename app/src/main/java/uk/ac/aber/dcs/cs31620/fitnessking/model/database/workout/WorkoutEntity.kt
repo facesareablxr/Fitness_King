@@ -12,8 +12,9 @@ import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
 
 @Entity(tableName = "workouts")
 data class WorkoutEntity(
-    @PrimaryKey(autoGenerate = true) var workoutId: Int = 0,
+    @PrimaryKey(autoGenerate = true) var workoutId: Long = 0,
     var day: DaysOfWeek = DaysOfWeek.Monday,
     var focus: Focus = Focus.Arms,
     var length: Int = 0,
+    var restTime: Int = 0
 )

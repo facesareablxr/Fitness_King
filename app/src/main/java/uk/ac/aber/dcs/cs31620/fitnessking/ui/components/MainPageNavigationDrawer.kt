@@ -16,27 +16,26 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 
+/**
+ * This is the navigation drawer, this will be accessible through the MainPageTopAppBar
+ */
 @Composable
 fun MainPageNavigationDrawer(
     navController: NavHostController,
@@ -45,22 +44,10 @@ fun MainPageNavigationDrawer(
     content: @Composable () -> Unit = {}
 ) {
     val items = listOf(
-        Pair(
-            Icons.Default.Home,
-            stringResource(R.string.home)
-        ),
-        Pair(
-            Icons.Default.CalendarMonth,
-            stringResource(R.string.schedule)
-        ),
-        Pair(
-            Icons.Default.Favorite,
-            stringResource(R.string.favourite)
-        ),
-        Pair(
-            Icons.Default.Settings,
-            stringResource(R.string.settings)
-        )
+        ItemData(Icons.Default.Home, stringResource(R.string.home), Screen.Home.route),
+        ItemData(Icons.Default.CalendarMonth, stringResource(R.string.schedule), Screen.Schedule.route),
+        ItemData(Icons.Default.Favorite, stringResource(R.string.favourite), Screen.Saved.route),
+        ItemData(Icons.Default.Settings, stringResource(R.string.settings), "settings_screen_route")
     )
 
     ModalNavigationDrawer(
@@ -78,9 +65,9 @@ fun MainPageNavigationDrawer(
                         .align(CenterHorizontally),
                 )
                 NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.username), modifier = Modifier.padding(16.dp))},
+                    label = { Text(stringResource(R.string.username), modifier = Modifier.padding(16.dp)) },
                     selected = false,
-                    onClick = { /*TODO*/ }
+                    onClick = { /* Handle profile click */ }
                 )
                 Divider(
                     modifier = Modifier
@@ -93,19 +80,22 @@ fun MainPageNavigationDrawer(
                         .fillMaxSize()
                         .padding(20.dp, 0.dp)
                 ) {
-                   items.forEachIndexed { index, item ->
+                    items.forEachIndexed { index, item ->
                         NavigationDrawerItem(
                             icon = {
                                 Icon(
-                                    imageVector = item.first,
-                                    contentDescription = item.second
+                                    imageVector = item.icon,
+                                    contentDescription = item.label
                                 )
                             },
-                            label = { Text(item.second) },
-                            selected = index == selectedItem.value,
+                            label = { Text(item.label) },
+                            selected = index == selectedItem.intValue,
                             onClick = {
-                                selectedItem.value = index
+                                selectedItem.intValue = index
                                 if (index == 0) {
+                                    closeDrawer()
+                                } else {
+                                    navController.navigate(item.route)
                                     closeDrawer()
                                 }
                             }
@@ -118,13 +108,8 @@ fun MainPageNavigationDrawer(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-private fun MainPageNavigationDrawerPreview() {
-    FitnessKingTheme(dynamicColor = false) {
-        val navController = rememberNavController()
-        val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
-        MainPageNavigationDrawer(navController, drawerState)
-    }
-}
+data class ItemData(
+    val icon: ImageVector,
+    val label: String,
+    val route: String
+)

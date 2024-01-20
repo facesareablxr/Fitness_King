@@ -8,14 +8,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.AddNewExerciseTopLevel
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseViewModel
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling.AddNewExerciseTopLevel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.home.HomeScreen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling.EditExerciseTopLevel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling.SavedExerciseTopLevel
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule.AddNewWorkoutTopLevel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule.ScheduleScreenTopLevel
 
 /**
@@ -41,7 +46,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun BuildNavigationGraph() {
+private fun BuildNavigationGraph(
+    exerciseViewModel: ExerciseViewModel = viewModel(),
+    navController: NavController = rememberNavController()
+) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -51,6 +59,8 @@ private fun BuildNavigationGraph() {
         composable(Screen.Schedule.route) { ScheduleScreenTopLevel(navController) }
         composable(Screen.Saved.route) { SavedExerciseTopLevel(navController) }
         composable(Screen.AddExercise.route){ AddNewExerciseTopLevel(navController) }
+        composable(Screen.AddWorkout.route){ AddNewWorkoutTopLevel(navController)}
+        composable(Screen.EditExercise.route){ EditExerciseTopLevel(navController)}
     }
 }
 

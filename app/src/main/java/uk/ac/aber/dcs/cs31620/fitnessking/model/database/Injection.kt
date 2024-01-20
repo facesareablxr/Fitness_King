@@ -4,6 +4,6 @@ import android.content.Context
 
 object Injection {
     fun getDatabase(context: Context): FitnessRDB =
-        FitnessKingDB.getDatabase(context)!!
+        FitnessKingDB.getDatabase(context)
 
 }

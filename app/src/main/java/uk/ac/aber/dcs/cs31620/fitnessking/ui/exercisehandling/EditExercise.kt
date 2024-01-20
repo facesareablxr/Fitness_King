@@ -24,22 +24,19 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseViewModel
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.AddNewImageBox
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.DropsetButton
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.ExerciseNameInput
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.RepsInput
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.SetsInput
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.adding.WeightInput
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.SmallTopAppBar
 
 @Composable
 fun EditExerciseTopLevel(
     navController: NavHostController,
-    exerciseViewModel: ExerciseViewModel = viewModel(),
-    exerciseId: Int
+    exerciseViewModel: ExerciseViewModel = viewModel()
 ) {
-    val exercise = exerciseViewModel.getExerciseById(exerciseId)
-
+    val exerciseId = navController.currentBackStackEntry?.arguments?.getInt("exerciseId")
+    val exercise = if (exerciseId != null) {
+        exerciseViewModel.getExerciseById(exerciseId)
+    } else {
+        ExerciseEntity(exerciseId = 0, name = "", sets = 0, reps = 0, weight = 0, isDropSet = false, image = "")
+    }
     EditExercise(
         navController = navController,
         updateExercise = { exercise ->
@@ -131,6 +128,7 @@ fun EditExercise(
                     image = image,
                     doUpdate = { newExercise ->
                         updateExercise(newExercise)
+                        navController.navigateUp()
                     },
                     navController
                 )

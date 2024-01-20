@@ -94,7 +94,7 @@ fun WorkoutCardForToday(
                 )
                 Spacer(modifier = modifier.height(8.dp))
 
-                // Display exercises in individual cards
+                // Display exercises in individual cards NEEDS FIXING BRUH
                 val exercises by workoutViewModel.getExercisesForWorkout(currentWorkout!!)
                     .observeAsState()
                 if (exercises != null) {

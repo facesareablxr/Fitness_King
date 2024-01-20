@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.ui.adding
+package uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,20 +22,38 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.SmallTopAppBar
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseViewModel
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutViewModel
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.ButtonSpinner
 
 @Composable
+fun AddNewWorkoutTopLevel(
+     navController: NavHostController,
+     workoutViewModel: WorkoutViewModel = viewModel()
+){
+    AddNewWorkout(
+        navController = navController,
+        insertWorkout = { workout ->
+            workoutViewModel.insertWorkout(workout)
+        }
+    )
+}
+
+
+@Composable
 fun AddNewWorkout(
     navController: NavHostController,
-    insertWorkout: (WorkoutEntity) -> Unit = {}
+    insertWorkout: (WorkoutEntity) -> Unit = {} ,
+    workoutViewModel: WorkoutViewModel = viewModel()
 ) {
     //Assigning the values for the date and focus arrays
     var values = stringArrayResource(id = R.array.DayOfWeek)
     val dayOfWeekValues = values.copyOfRange(1, values.size)
     values = stringArrayResource(id = R.array.Focus)
     val focusValues = values.copyOfRange(1, values.size)
+    val availableDays = workoutViewModel.availableDays.observeAsState()
+
 
     //Assigning the variables for the workout components
     var dayOfWorkout by remember { mutableStateOf(dayOfWeekValues[0]) }
@@ -73,39 +91,46 @@ fun AddNewWorkout(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
+                .wrapContentWidth()
         ) {
+            Text(text = "Day of the week:")
             DayOfWeekInput(
                 values = dayOfWeekValues,
                 modifier = Modifier
                     .padding(top = 8.dp)
-                    .fillMaxWidth(),
+                    .wrapContentWidth(),
                 updateDayOfWeek = {
                     dayOfWorkout = it
                 }
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Focus:")
             FocusInput(
                 values = focusValues,
                 modifier = Modifier
                     .padding(top = 8.dp)
-                    .fillMaxWidth(),
+                    .wrapContentWidth(),
                 updateFocus = {
                     exerciseFocus = it
                 }
             )
-           ExerciseSelectionAlertDialog(
-               onDismissRequest = { },
-               onExerciseSelected = { selectedExercises ->
-                   val selectedExerciseIds = selectedExercises.map { it.exerciseId }
-                   exerciseIds = selectedExerciseIds
-               }
-           )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(onClick = {
+            //    ExerciseSelectionAlertDialog()
+            }) {
+                Text("Select Exercises")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Rest time:")
             RestTime(
+                modifier = Modifier,
                 restTimeInMinutes = 0,
                 onRestChange = {
                     rest = it
                 }
             )
+            Spacer(modifier = Modifier.height(16.dp))
             WorkoutLength(
                 exerciseLengths = exerciseLengths,
                 restTime = rest )
@@ -116,7 +141,7 @@ fun AddNewWorkout(
 /**
  * Function to insert workout into the workout database
  */
-private fun insertWorkout(
+fun insertWorkout(
     dayOfWeek: DaysOfWeek,
     focus: Focus,
     length: Int,
@@ -249,19 +274,6 @@ private fun ExerciseSelectionDialogContent(
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            TextButton(onClick = onDismissRequest) {
-                Text("Cancel")
-            }
-            Button(onClick = { onExerciseSelected(selectedExercises) }) {
-                Text("Confirm Selection")
-            }
-        }
     }
 }
 
@@ -271,7 +283,8 @@ private fun ExerciseSelectionDialogContent(
 @Composable
 fun RestTime(
     restTimeInMinutes: Int,
-    onRestChange: (Int) -> Unit
+    onRestChange: (Int) -> Unit,
+    modifier: Modifier
 ) {
     var restTime by remember { mutableIntStateOf(restTimeInMinutes) }
 
@@ -284,6 +297,7 @@ fun RestTime(
         valueRange = 0f..30f,
         steps = 31,
         onValueChangeFinished = {},
+        modifier = modifier.width(350.dp)
     )
     Text(
         text = "Rest time: $restTime minutes",

@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.ui.adding
+package uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -90,7 +90,7 @@ fun AddNewExercise(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .clickable{keyboardController?.hide()}
+                    .clickable { keyboardController?.hide() }
             ) {
                 AddNewImageBox(
                     image = image,
@@ -101,6 +101,7 @@ fun AddNewExercise(
                         image = newImagePath
                     }
                 )
+                Spacer(modifier = Modifier.padding(4.dp))
                 ExerciseNameInput(
                     name = name,
                     modifier = Modifier,
@@ -108,6 +109,7 @@ fun AddNewExercise(
                         name = it
                     }
                 )
+                Spacer(modifier = Modifier.padding(4.dp))
                 SetsInput(
                     sets = sets,
                     modifier = Modifier,
@@ -115,6 +117,7 @@ fun AddNewExercise(
                         sets = it
                     }
                 )
+                Spacer(modifier = Modifier.padding(4.dp))
                 RepsInput(
                     reps = reps,
                     modifier = Modifier,
@@ -122,6 +125,7 @@ fun AddNewExercise(
                         reps = it
                     }
                 )
+                Spacer(modifier = Modifier.padding(4.dp))
                 WeightInput(
                     weight = weight,
                     modifier = Modifier,
@@ -129,12 +133,14 @@ fun AddNewExercise(
                         weight = it
                     }
                 )
+                Spacer(modifier = Modifier.padding(4.dp))
                 DropsetButton(
                     dropset = false,
                     updateDropset = {
                         dropset = it
                     }
                 )
+                Spacer(modifier = Modifier.padding(4.dp))
                 AddExerciseButton(
                     name = name,
                     sets = sets,
@@ -260,12 +266,19 @@ fun DropsetButton(
     dropset: Boolean,
     updateDropset: (Boolean) -> Unit
 ) {
+    var checkedState by remember { mutableStateOf(dropset) } //Managed internally because the attempts before, did not work.
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable {
+            checkedState = !checkedState
+            updateDropset(checkedState)
+        }
     ) {
         Checkbox(
-            checked = dropset,
-            onCheckedChange = updateDropset
+            checked = checkedState,
+            onCheckedChange = { newCheckedValue ->
+                checkedState = newCheckedValue
+            }
         )
         Text(
             text = "Dropset",
@@ -274,6 +287,7 @@ fun DropsetButton(
         )
     }
 }
+
 
 /**
  * This is the AddNewImageBox where the box holds the option to add a new image and will call the
@@ -291,17 +305,18 @@ fun AddNewImageBox(
             .height(220.dp)
             .padding(16.dp)
             .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+            .clickable {}
     ) {
-        AddNewImage(
-            imagePath = image,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .fillMaxWidth(),
-                //.padding(16.dp),
-            updateImagePath = updateImagePath
-        )
+            AddNewImage(
+                imagePath = image,
+                modifier = Modifier
+                    //.align(Alignment.CenterHorizontally)
+                    .fillMaxWidth(),
+                updateImagePath = updateImagePath
+            )
+        }
     }
-}
+
 
 /**
  * This is the button where the user submits their chosen exercise data, it will then push it to the

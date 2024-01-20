@@ -6,7 +6,8 @@ sealed class Screen(val route: String) {
     data object Saved: Screen("saved")
     data object AddExercise : Screen("addExercise")
     data object EditExercise : Screen("editExercise")
-
+    data object AddWorkout : Screen("addWorkout")
+    data object  EditWorkout : Screen ("editWorkout")
 }
 
 val screens = listOf(

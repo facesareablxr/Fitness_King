@@ -12,12 +12,14 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "exercises")
 data class ExerciseEntity(
     @PrimaryKey(autoGenerate = true)
-    val exerciseId: Int = 0,
+    val exerciseId: Long = 0,
     val name: String = "",
     val sets: Int = 0,
     val reps: Int = 0,
     val weight: Int = 0,
     val isDropSet: Boolean = false,
     @ColumnInfo(name = "main_image_path")
-    var image: String = ""
+    var image: String = "",
+    var isFavourite: Boolean = false,
+    val length: Int = 0
 )

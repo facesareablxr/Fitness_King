@@ -1,13 +1,17 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises
 
-import androidx.room.Entity
-import androidx.room.TypeConverters
+import androidx.room.Embedded
+import androidx.room.Junction
+import androidx.room.Relation
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity
 
-
-@Entity(primaryKeys = ["workoutId", "exerciseId"], tableName = "workoutwithexercises")
 data class WorkoutWithExercises(
-    val workoutId: Int,
-
-    @TypeConverters(ExerciseIdsConverter::class)
-    val exerciseId: List<Long>
+    @Embedded val workoutEntity: WorkoutEntity,
+    @Relation(
+        parentColumn = "workoutId",
+        entityColumn = "exerciseId",
+        associateBy = Junction(WorkoutWithExercisesCrossRef::class)
+    )
+    val exercises: List<ExerciseEntity>
 )

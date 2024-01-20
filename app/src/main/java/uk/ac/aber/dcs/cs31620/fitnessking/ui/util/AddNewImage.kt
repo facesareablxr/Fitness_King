@@ -1,6 +1,7 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.ui.util
 
 import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -30,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.FitCenter
 import uk.ac.aber.dcs.cs31620.fitnessking.R
 import java.io.File
 import java.io.IOException
@@ -48,45 +51,47 @@ fun AddNewImage(
     updateImagePath: (String) -> Unit = {}
 ) {
     var photoFile: File? = remember { null }
-    val context = LocalContext.current
+    val ctx = LocalContext.current
+
+
     val resultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
+            if (it.resultCode == RESULT_OK) {
                 updateImagePath(
                     "file://${photoFile!!.absolutePath}"
                 )
             }
         }
+
     // Should recompose if imagePath changes as a result of taking the picture
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
     ) {
-        Text(text = stringResource(id = R.string.enterImage))
 
         GlideImage(
-            model = if (imagePath.isEmpty()) painterResource(R.drawable.placeholder_image) else Uri.parse(
-                imagePath
-            ),
+            model = Uri.parse(imagePath),
             contentDescription = stringResource(R.string.exerciseImage),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(150.dp) // Adjust image size
+                .height(200.dp)
                 .clickable {
                     takePicture(
-                        context = context,
+                        ctx = ctx,
                         resultLauncher = resultLauncher,
                     ) {
                         photoFile = it
                     }
-                }
+                },
         )
+        Text(text = stringResource(id = R.string.enterImage))
     }
+
 }
 
 private fun takePicture(
-    context: Context,
+    ctx: Context,
     resultLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
     updateFile: (File) -> Unit
 ) {
@@ -97,30 +102,36 @@ private fun takePicture(
 
     // Create the File where the photo should go
     try {
-        photoFile = ResourceUtil.createImageFile(context)
+        photoFile = ResourceUtil.createImageFile(ctx)
     } catch (ex: IOException) {
         // Error occurred while creating the File
         Toast.makeText(
-            context,
-            context.getString(R.string.imageError),
+            ctx,
+            ctx.getString(R.string.imageError),
             Toast.LENGTH_SHORT
         ).show()
     }
 
+    // Continue only if the File was successfully created
     photoFile?.let {
         val photoUri = FileProvider.getUriForFile(
-            context,
-            context.packageName,
+            ctx,
+            ctx.packageName,
             it
         )
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
         takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        // Request will fail if a camera app not available.
+        // This used to use takePictureIntent.resolveActivity(requireActivity().packageManager)
+        // However this requires a <query> element to be added to the manifest for
+        // Android 30+. The following is simpler.
         try {
             resultLauncher.launch(takePictureIntent)
             updateFile(photoFile)
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(context, R.string.imageError, Toast.LENGTH_LONG)
+            Toast.makeText(ctx, R.string.photoerror, Toast.LENGTH_LONG)
                 .show()
         }
     }
+
 }
