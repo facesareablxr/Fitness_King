@@ -29,7 +29,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
@@ -37,6 +36,7 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutViewModel
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercises
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 
 
@@ -85,7 +85,7 @@ fun ScheduleScreen(
                     coroutineScope.launch {
                         // Perform navigation or other actions as needed
                     }
-                }, viewModel = WorkoutViewModel(application = Application()))
+                }, workoutViewModel = WorkoutViewModel(application = Application()))
             }
         }
     )
@@ -153,7 +153,7 @@ fun ExerciseImage(imageRes: Int) {
 fun ScheduleScreenContent(
     workoutsList: List<WorkoutEntity>,
     onWorkoutClick: (WorkoutEntity) -> Unit,
-    viewModel: WorkoutViewModel,
+    workoutViewModel: WorkoutViewModel,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -161,11 +161,11 @@ fun ScheduleScreenContent(
             .padding(horizontal = 16.dp)
     ) {
         items(workoutsList) { workout ->
-            val exercises by viewModel.getExercisesForWorkout(workout).observeAsState(listOf())
+            val exercises = workoutViewModel.workoutWithExercises
 
             WorkoutCard(
                 workout = workout,
-                exercises = exercises ?: emptyList()
+                exercises = exercises as List<ExerciseEntity>
             ) { onWorkoutClick(workout) }
         }
     }

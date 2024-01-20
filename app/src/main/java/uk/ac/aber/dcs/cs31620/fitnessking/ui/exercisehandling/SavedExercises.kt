@@ -1,5 +1,6 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -72,12 +73,13 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
  * @param exerciseViewModel is the ExerciseViewModel from the database and manages the execution of
  * various queries or actions in the database
  */
+
 @Composable
 fun SavedExerciseTopLevel(
     navController: NavHostController,
     exerciseViewModel: ExerciseViewModel = viewModel(),
 ) {
-    val exerciseList by exerciseViewModel.allExercises.observeAsState(listOf())
+    var exerciseList by remember {mutableStateOf(listOf<ExerciseEntity>())}
     var searchQuery by remember { mutableStateOf("") }
     var isFavouritesOnly by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
@@ -93,6 +95,7 @@ fun SavedExerciseTopLevel(
         expanded = expanded
     )
 }
+
 
 
 

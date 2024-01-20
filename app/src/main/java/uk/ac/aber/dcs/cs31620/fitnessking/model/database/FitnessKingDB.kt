@@ -9,30 +9,19 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseDao
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.ExerciseIdsConverter
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutDao
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity
+import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.ExerciseIdsConverter
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercises
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercisesCrossRef
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises.WorkoutWithExercisesDao
 
-/**
- * Class to initialise the whole FitnessKing database with all the different tables of information
- */
-@Database(
-    entities = [WorkoutEntity::class, ExerciseEntity::class, WorkoutWithExercises::class],
-    version = 1,
-    exportSchema = false
-)
+
+@Database(entities = [WorkoutEntity::class, ExerciseEntity::class, WorkoutWithExercises::class], version = 1, exportSchema = false)
 @TypeConverters(ExerciseIdsConverter::class)
 abstract class FitnessKingDB : RoomDatabase(), FitnessRDB {
-    abstract override fun workoutDao(): WorkoutDao
-    abstract override fun exerciseDao(): ExerciseDao
-    abstract override fun workoutWithExercisesDao(): WorkoutWithExercisesDao
+
+    abstract override fun allDao(): AllDao
     override fun closeDb() {
         instance?.close()
         instance = null
@@ -46,86 +35,84 @@ abstract class FitnessKingDB : RoomDatabase(), FitnessRDB {
         fun getDatabase(context: Context): FitnessKingDB {
             if (instance == null) {
                 instance =
-                    Room.databaseBuilder(
+                    Room.databaseBuilder<FitnessKingDB>(
                         context.applicationContext,
                         FitnessKingDB::class.java,
                         "FitnessKingDB"
                     )
-                        .allowMainThreadQueries()
+                        //.allowMainThreadQueries()
                         .addCallback(roomDatabaseCallback(context))
+                        //.addMigrations(MIGRATION_1_2, MIGRATION_2_3
                         .build()
-            }
+            } // if
             return instance as FitnessKingDB
         }
-
         private fun roomDatabaseCallback(context: Context): Callback {
             return object : Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
 
                     coroutineScope.launch {
-                        populateDatabase(context, getDatabase(context))
+                        populateDatabase(context, getDatabase(context)!!)
                     }
                 }
             }
         }
 
-        /**
-         * Code to populate the database with some example data
-         */
         private fun populateDatabase(context: Context, instance: FitnessKingDB) {
-            val imagePath = "file:///android_asset/images/"
+            val allDao = instance.allDao()
 
+            //Exercises
 
-            // Exercises
-            val exerciseDao = instance.exerciseDao()
-            val exercises = listOf(
-                ExerciseEntity(name = "Push-ups", sets = 3, reps = 10, weight = 0, isDropSet = false, image = "${imagePath}pushup.jpg", isFavourite = false),
-                ExerciseEntity(name = "Squats", sets = 4, reps = 12, weight = 0, isDropSet = false, image = "${imagePath}squat.png", isFavourite = true),
-                ExerciseEntity(name = "Pull-ups", sets = 3, reps = 8, weight = 0, isDropSet = true, image = "${imagePath}pullup.jpg", isFavourite = false),
-                ExerciseEntity(name = "Bench press", sets = 3, reps = 6, weight = 60, isDropSet = true, image = "${imagePath}benchpress.jpg", isFavourite = false),
-                ExerciseEntity(name = "Rows", sets = 3, reps = 10, weight = 50, isDropSet = false, image = "${imagePath}row.jpg", isFavourite = true)
-            )
+            val ex1 = ExerciseEntity(name = "Push-ups", sets = 3, reps = 10, weight = 0, length = 40, isFavourite = false, isDropSet = true)
+            val ex2 =ExerciseEntity(name = "Squats", sets = 4, reps = 12, weight = 0, length = 35, isFavourite = true, isDropSet = false)
+            val ex3 = ExerciseEntity(name = "Pull-ups", sets = 3, reps = 8, weight = 0, length = 25, isFavourite = false, isDropSet = false)
+            val ex4 = ExerciseEntity(name = "Bench press", sets = 3, reps = 6, weight = 60, length = 20, isFavourite = false, isDropSet = false)
+            val ex5 =  ExerciseEntity(name = "Rows", sets = 3, reps = 10, weight = 50, length = 15, isFavourite = true, isDropSet = true)
 
-            for (exercise in exercises) {
-                exerciseDao.insertExercise(exercise) //Adds to exercise table
-            }
+            allDao.insertExercise(ex1)
+            allDao.insertExercise(ex2)
+            allDao.insertExercise(ex3)
+            allDao.insertExercise(ex4)
+            allDao.insertExercise(ex5)
+
 
             // Workouts
-            val workoutDao = instance.workoutDao()
-            val workouts = listOf(
-                WorkoutEntity(day = DaysOfWeek.Monday, focus = Focus.Chest, length = 45),
-                WorkoutEntity(day = DaysOfWeek.Wednesday, focus = Focus.Legs, length = 60),
-                WorkoutEntity(day = DaysOfWeek.Thursday, focus = Focus.Back, length = 50),
-                WorkoutEntity(day = DaysOfWeek.Friday, focus = Focus.Full, length = 50)
-            )
-            for (workout in workouts) {
-                workoutDao.insertWorkout(workout) //Adds to workout table
-            }
+            val wo1 = WorkoutEntity(day = DaysOfWeek.Monday, focus = Focus.Chest, length = 45, restTime = 10)
+            val wo2 = WorkoutEntity(day = DaysOfWeek.Wednesday, focus = Focus.Legs, length = 60, restTime = 12)
+            val wo3 = WorkoutEntity(day = DaysOfWeek.Thursday, focus = Focus.Back, length = 50, restTime = 14)
+            val wo4 = WorkoutEntity(day = DaysOfWeek.Saturday, focus = Focus.Full, length = 50, restTime = 22)
 
-            //WorkoutWithExercises
-            val workoutExercisesDao = instance.workoutWithExercisesDao()
+            allDao.insertWorkout(wo1)
+            allDao.insertWorkout(wo2)
+            allDao.insertWorkout(wo3)
+            allDao.insertWorkout(wo4)
 
-            val workoutWithExercises = listOf(
-                WorkoutWithExercisesCrossRef(
-                    workoutId = 1, // Monday workout
-                    exerciseId = ExerciseIdsConverter().fromList(listOf(1, 4))
-                ),
-                WorkoutWithExercisesCrossRef(
-                    workoutId = 2, // Wednesday workout
-                    exerciseId = ExerciseIdsConverter().fromList(listOf(2, 5))
-                ),
-                WorkoutWithExercisesCrossRef(
-                    workoutId = 3, // Thursday workout
-                    exerciseId = ExerciseIdsConverter().fromList(listOf(3,2))
-                ),
-                WorkoutWithExercisesCrossRef(
-                    workoutId = 4, //Friday workout
-                    exerciseId = ExerciseIdsConverter().fromList(listOf(1,2,3,4))
-                )
-            )
 
-            workoutExercisesDao.insertWorkoutWithExercisesCrossRef(workoutWithExercises) //Adds all information to the workoutwithexercises table
+            allDao.insertWorkoutWithExercises(WorkoutWithExercises(wo1.workoutId.toLong(),
+                ex1.exerciseId.toLong()
+            ))
+            allDao.insertWorkoutWithExercises(WorkoutWithExercises(wo1.workoutId.toLong(),
+                ex2.exerciseId.toLong()
+            ))
+            allDao.insertWorkoutWithExercises(WorkoutWithExercises(wo2.workoutId.toLong(),
+                ex2.exerciseId.toLong()
+            ))
+            allDao.insertWorkoutWithExercises(WorkoutWithExercises(wo2.workoutId.toLong(),
+                ex5.exerciseId.toLong()
+            ))
+            allDao.insertWorkoutWithExercises(WorkoutWithExercises(wo3.workoutId.toLong(),
+                ex5.exerciseId.toLong()
+            ))
+            allDao.insertWorkoutWithExercises(WorkoutWithExercises(wo4.workoutId.toLong(),
+                ex1.exerciseId.toLong()
+            ))
+            allDao.insertWorkoutWithExercises(WorkoutWithExercises(wo4.workoutId.toLong(),
+                ex2.exerciseId.toLong()
+            ))
+            allDao.insertWorkoutWithExercises(WorkoutWithExercises(wo4.workoutId.toLong(),
+                ex3.exerciseId.toLong()
+            ))
         }
     }
 }

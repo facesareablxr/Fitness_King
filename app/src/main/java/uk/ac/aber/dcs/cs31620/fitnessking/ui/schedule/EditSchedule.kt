@@ -59,7 +59,7 @@ fun EditSchedule(
     val dayOfWeekValues = values.copyOfRange(1, values.size)
     values = stringArrayResource(id = R.array.Focus)
     val focusValues = values.copyOfRange(1, values.size)
-    val availableDays = workoutViewModel.availableDays.observeAsState()
+
 
 
     //Assigning the variables for the workout components

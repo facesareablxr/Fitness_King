@@ -3,9 +3,6 @@ package uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 
 /**
  * ExerciseViewModel manages the exercises in the database, uses the Dao class
@@ -13,37 +10,28 @@ import kotlinx.coroutines.launch
  */
 class ExerciseViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: ExerciseRepository = ExerciseRepository(application)
-    private val _exercises = MutableLiveData<List<ExerciseEntity>>()
-    val exercises: LiveData<List<ExerciseEntity>> = _exercises
+    // LiveData for observing all exercises
+    val allExercises: LiveData<List<ExerciseEntity>> = repository.getAllExercises()
 
-    init {
-        refreshExercises()
-    }
-
-    private fun refreshExercises() {
-        viewModelScope.launch {
-            _exercises.value = repository.getAllExercises()
-        }
-    }
-
-    fun insertExercise(exercise: ExerciseEntity) = viewModelScope.launch {
+    // Function to insert a new exercise
+    fun insertExercise(exercise: ExerciseEntity): Boolean {
         repository.insertExercise(exercise)
-        refreshExercises()
+        return true // Return result from repository
     }
-
-    fun updateExercise(exercise: ExerciseEntity) = viewModelScope.launch {
+    // Function to update an existing exercise
+    fun updateExercise(exercise: ExerciseEntity) {
         repository.updateExercise(exercise)
-        refreshExercises()
     }
-
-    fun deleteExercise(exercise: ExerciseEntity) = viewModelScope.launch {
+    // Function to delete an exercise
+    fun deleteExercise(exercise: ExerciseEntity) {
         repository.deleteExercise(exercise)
-        refreshExercises()
     }
 
-    fun toggleFavorite(exerciseId: Int, isFavorite: Boolean) = viewModelScope.launch {
-        repository.toggleFavorite(exerciseId, isFavorite)
-        refreshExercises()
+    fun getExerciseById(exerciseId: Int): ExerciseEntity {
+        return repository.getExerciseById(exerciseId)
     }
+    // Function to calculate the length of the workout, from the list of exercises
+
+
 
 }

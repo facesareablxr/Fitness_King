@@ -5,29 +5,17 @@ import android.app.Application
 import uk.ac.aber.dcs.cs31620.fitnessking.model.database.Injection
 
 class ExerciseRepository(application: Application) {
-    private val exerciseDao = Injection.getDatabase(application).exerciseDao()
+    private val allDao = Injection.getDatabase(application).allDao()
+    // Exercise CRUD Functions
+    fun getAllExercises() = allDao.getAllExercises()
 
-    fun insertExercise(exercise: ExerciseEntity): Long {
-        return exerciseDao.insertExercise(exercise)
-    }
+    fun insertExercise(exercise: ExerciseEntity) = allDao.insertExercise(exercise)
 
-    fun updateExercise(exercise: ExerciseEntity) {
-        exerciseDao.updateExercise(exercise)
-    }
+    fun updateExercise(exercise: ExerciseEntity) = allDao.updateExercise(exercise)
 
-    fun deleteExercise(exercise: ExerciseEntity) {
-        exerciseDao.deleteExercise(exercise)
-    }
+    fun deleteExercise(exercise: ExerciseEntity) = allDao.deleteExercise(exercise)
 
-    fun getAllExercises(): List<ExerciseEntity> {
-        return exerciseDao.getAllExercises()
-    }
-
-    fun getExerciseById(exerciseId: Int): ExerciseEntity? {
-        return exerciseDao.getExerciseById(exerciseId)
-    }
-
-    fun toggleFavorite(exerciseId: Int, isFavorite: Boolean) {
-        exerciseDao.toggleFavorite(exerciseId, isFavorite)
+    fun getExerciseById(exerciseId: Int): ExerciseEntity {
+        return allDao.getExerciseById(exerciseId.toLong())
     }
 }

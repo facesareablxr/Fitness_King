@@ -65,10 +65,11 @@ fun HomeScreenContent(modifier: Modifier, workoutViewModel: WorkoutViewModel) {
                     .padding(bottom = 16.dp)
                     .align(CenterHorizontally)
             )
-       WorkoutCardForToday(workoutViewModel = workoutViewModel, modifier = modifier)
+       //WorkoutCardForToday(workoutViewModel = workoutViewModel, modifier = modifier)
     }
 }
 
+/*
 @Composable
 fun WorkoutCardForToday(
     workoutViewModel: WorkoutViewModel,
@@ -94,9 +95,9 @@ fun WorkoutCardForToday(
                 )
                 Spacer(modifier = modifier.height(8.dp))
 
-                // Display exercises in individual cards NEEDS FIXING BRUH
-                val exercises by workoutViewModel.getExercisesForWorkout(currentWorkout!!)
-                    .observeAsState()
+
+                workoutViewModel.currentWorkout.observe() { workout ->
+                    val exercises = workout?.exercises
                 if (exercises != null) {
                     if (exercises!!.isNotEmpty()) {
                         exercises!!.forEach { exercise ->
@@ -115,7 +116,9 @@ fun WorkoutCardForToday(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
-                        onClick = { /* Handle random workout suggestion */ },
+                        onClick = { */
+/* Handle random workout suggestion *//*
+ },
                         modifier = Modifier.align(CenterHorizontally)
                     ) {
                         Text("Suggest a random workout")
@@ -125,3 +128,4 @@ fun WorkoutCardForToday(
         }
     }
 }
+*/

@@ -9,12 +9,11 @@ import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
  * This is the entity class for the workouts, it defines the different columns within a workout table
  * including the relation to the exercise table.
  */
-
 @Entity(tableName = "workouts")
 data class WorkoutEntity(
-    @PrimaryKey(autoGenerate = true) var workoutId: Long = 0,
+    @PrimaryKey(autoGenerate = true) var workoutId: Int = 0,
     var day: DaysOfWeek = DaysOfWeek.Monday,
     var focus: Focus = Focus.Arms,
     var length: Int = 0,
-    var restTime: Int = 0
+    val restTime: Int = 0
 )
