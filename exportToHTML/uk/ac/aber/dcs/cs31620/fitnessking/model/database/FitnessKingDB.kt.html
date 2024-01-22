@@ -1,0 +1,174 @@
+<html>
+<head>
+<title>FitnessKingDB.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #6a8759;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+FitnessKingDB.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">uk.ac.aber.dcs.cs31620.fitnessking.model.database</span>
+
+<span class="s1">import android.content.Context</span>
+<span class="s1">import androidx.room.Database</span>
+<span class="s1">import androidx.room.Room</span>
+<span class="s1">import androidx.room.RoomDatabase</span>
+<span class="s1">import androidx.sqlite.db.SupportSQLiteDatabase</span>
+<span class="s1">import kotlinx.coroutines.CoroutineScope</span>
+<span class="s1">import kotlinx.coroutines.Dispatchers</span>
+<span class="s1">import kotlinx.coroutines.launch</span>
+<span class="s1">import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity</span>
+<span class="s1">import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity</span>
+<span class="s1">import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek</span>
+<span class="s1">import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus</span>
+
+
+<span class="s1">@Database(</span>
+    <span class="s1">entities = [WorkoutEntity::</span><span class="s0">class, </span><span class="s1">ExerciseEntity::</span><span class="s0">class</span><span class="s1">]</span><span class="s0">,</span>
+    <span class="s1">version = </span><span class="s2">1</span><span class="s0">,</span>
+    <span class="s1">exportSchema = </span><span class="s0">false</span>
+<span class="s1">)</span>
+<span class="s1">abstract </span><span class="s0">class </span><span class="s1">FitnessKingDB : RoomDatabase()</span><span class="s0">, </span><span class="s1">FitnessRDB {</span>
+
+    <span class="s1">abstract override </span><span class="s0">fun </span><span class="s1">allDao(): AllDao</span>
+    <span class="s1">override </span><span class="s0">fun </span><span class="s1">closeDb() {</span>
+        <span class="s1">instance?.close()</span>
+        <span class="s1">instance = </span><span class="s0">null</span>
+    <span class="s1">}</span>
+
+    <span class="s1">companion </span><span class="s0">object </span><span class="s1">{</span>
+        <span class="s1">private </span><span class="s0">var </span><span class="s1">instance: FitnessKingDB? = </span><span class="s0">null</span>
+        <span class="s1">private </span><span class="s0">val </span><span class="s1">coroutineScope = CoroutineScope(Dispatchers.IO)</span>
+
+        <span class="s1">@Synchronized</span>
+        <span class="s0">fun </span><span class="s1">getDatabase(context: Context): FitnessKingDB {</span>
+            <span class="s0">if </span><span class="s1">(instance == </span><span class="s0">null</span><span class="s1">) {</span>
+                <span class="s1">instance =</span>
+                    <span class="s1">Room.databaseBuilder(</span>
+                        <span class="s1">context.applicationContext</span><span class="s0">,</span>
+                        <span class="s1">FitnessKingDB::</span><span class="s0">class</span><span class="s1">.java</span><span class="s0">,</span>
+                        <span class="s3">&quot;FitnessKingDB&quot;</span>
+                    <span class="s1">)</span>
+                        <span class="s4">//.allowMainThreadQueries()</span>
+                        <span class="s1">.addCallback(roomDatabaseCallback(context))</span>
+                        <span class="s4">//.addMigrations(MIGRATION_1_2, MIGRATION_2_3</span>
+                        <span class="s1">.build()</span>
+            <span class="s1">} </span><span class="s4">// if</span>
+            <span class="s0">return </span><span class="s1">instance </span><span class="s0">as </span><span class="s1">FitnessKingDB</span>
+        <span class="s1">}</span>
+
+        <span class="s1">private </span><span class="s0">fun </span><span class="s1">roomDatabaseCallback(context: Context): Callback {</span>
+            <span class="s0">return object </span><span class="s1">: Callback() {</span>
+                <span class="s1">override </span><span class="s0">fun </span><span class="s1">onCreate(db: SupportSQLiteDatabase) {</span>
+                    <span class="s0">super</span><span class="s1">.onCreate(db)</span>
+
+                    <span class="s1">coroutineScope.launch {</span>
+                        <span class="s1">populateDatabase(context</span><span class="s0">, </span><span class="s1">getDatabase(context))</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+
+        <span class="s1">private </span><span class="s0">fun </span><span class="s1">populateDatabase(context: Context</span><span class="s0">, </span><span class="s1">instance: FitnessKingDB) {</span>
+            <span class="s0">val </span><span class="s1">allDao = instance.allDao()</span>
+
+            <span class="s4">//Exercises</span>
+
+            <span class="s0">val </span><span class="s1">ex1 = ExerciseEntity(</span>
+                <span class="s1">name = </span><span class="s3">&quot;Push-ups&quot;</span><span class="s0">,</span>
+                <span class="s1">sets = </span><span class="s2">3</span><span class="s0">,</span>
+                <span class="s1">reps = </span><span class="s2">10</span><span class="s0">,</span>
+                <span class="s1">weight = </span><span class="s2">0</span><span class="s0">,</span>
+                <span class="s1">isFavourite = </span><span class="s0">false,</span>
+                <span class="s1">isDropSet = </span><span class="s0">true</span>
+            <span class="s1">)</span>
+            <span class="s0">val </span><span class="s1">ex2 = ExerciseEntity(</span>
+                <span class="s1">name = </span><span class="s3">&quot;Squats&quot;</span><span class="s0">,</span>
+                <span class="s1">sets = </span><span class="s2">4</span><span class="s0">,</span>
+                <span class="s1">reps = </span><span class="s2">12</span><span class="s0">,</span>
+                <span class="s1">weight = </span><span class="s2">0</span><span class="s0">,</span>
+                <span class="s1">isFavourite = </span><span class="s0">true,</span>
+                <span class="s1">isDropSet = </span><span class="s0">false</span>
+            <span class="s1">)</span>
+            <span class="s0">val </span><span class="s1">ex3 = ExerciseEntity(</span>
+                <span class="s1">name = </span><span class="s3">&quot;Pull-ups&quot;</span><span class="s0">,</span>
+                <span class="s1">sets = </span><span class="s2">3</span><span class="s0">,</span>
+                <span class="s1">reps = </span><span class="s2">8</span><span class="s0">,</span>
+                <span class="s1">weight = </span><span class="s2">0</span><span class="s0">,</span>
+                <span class="s1">isFavourite = </span><span class="s0">false,</span>
+                <span class="s1">isDropSet = </span><span class="s0">false</span>
+            <span class="s1">)</span>
+            <span class="s0">val </span><span class="s1">ex4 = ExerciseEntity(</span>
+                <span class="s1">name = </span><span class="s3">&quot;Bench press&quot;</span><span class="s0">,</span>
+                <span class="s1">sets = </span><span class="s2">3</span><span class="s0">,</span>
+                <span class="s1">reps = </span><span class="s2">6</span><span class="s0">,</span>
+                <span class="s1">weight = </span><span class="s2">60</span><span class="s0">,</span>
+                <span class="s1">isFavourite = </span><span class="s0">false,</span>
+                <span class="s1">isDropSet = </span><span class="s0">false</span>
+            <span class="s1">)</span>
+            <span class="s0">val </span><span class="s1">ex5 = ExerciseEntity(</span>
+                <span class="s1">name = </span><span class="s3">&quot;Rows&quot;</span><span class="s0">,</span>
+                <span class="s1">sets = </span><span class="s2">3</span><span class="s0">,</span>
+                <span class="s1">reps = </span><span class="s2">10</span><span class="s0">,</span>
+                <span class="s1">weight = </span><span class="s2">50</span><span class="s0">,</span>
+                <span class="s1">isFavourite = </span><span class="s0">true,</span>
+                <span class="s1">isDropSet = </span><span class="s0">true</span>
+            <span class="s1">)</span>
+
+            <span class="s1">allDao.insertExercise(ex1)</span>
+            <span class="s1">allDao.insertExercise(ex2)</span>
+            <span class="s1">allDao.insertExercise(ex3)</span>
+            <span class="s1">allDao.insertExercise(ex4)</span>
+            <span class="s1">allDao.insertExercise(ex5)</span>
+
+
+            <span class="s4">// Workouts</span>
+            <span class="s0">val </span><span class="s1">wo1 = WorkoutEntity(</span>
+                <span class="s1">day = DaysOfWeek.Monday</span><span class="s0">,</span>
+                <span class="s1">focus = Focus.Chest</span><span class="s0">,</span>
+                <span class="s1">length = </span><span class="s2">45</span><span class="s0">,</span>
+                <span class="s1">restTime = </span><span class="s2">10</span><span class="s0">,</span>
+                <span class="s1">exercise = listOf(ex1</span><span class="s0">, </span><span class="s1">ex2</span><span class="s0">, </span><span class="s1">ex3)</span>
+            <span class="s1">)</span>
+            <span class="s0">val </span><span class="s1">wo2 = WorkoutEntity(</span>
+                <span class="s1">day = DaysOfWeek.Wednesday</span><span class="s0">,</span>
+                <span class="s1">focus = Focus.Legs</span><span class="s0">,</span>
+                <span class="s1">length = </span><span class="s2">60</span><span class="s0">,</span>
+                <span class="s1">restTime = </span><span class="s2">12</span><span class="s0">,</span>
+                <span class="s1">exercise = listOf(ex3</span><span class="s0">, </span><span class="s1">ex4</span><span class="s0">, </span><span class="s1">ex5)</span>
+            <span class="s1">)</span>
+            <span class="s0">val </span><span class="s1">wo3 = WorkoutEntity(</span>
+                <span class="s1">day = DaysOfWeek.Thursday</span><span class="s0">,</span>
+                <span class="s1">focus = Focus.Back</span><span class="s0">,</span>
+                <span class="s1">length = </span><span class="s2">50</span><span class="s0">,</span>
+                <span class="s1">restTime = </span><span class="s2">14</span><span class="s0">,</span>
+                <span class="s1">exercise = listOf(ex2</span><span class="s0">,</span><span class="s1">ex4</span><span class="s0">,</span><span class="s1">ex1)</span>
+            <span class="s1">)</span>
+            <span class="s0">val </span><span class="s1">wo4 = WorkoutEntity(</span>
+                <span class="s1">day = DaysOfWeek.Sunday</span><span class="s0">,</span>
+                <span class="s1">focus = Focus.Full</span><span class="s0">,</span>
+                <span class="s1">length = </span><span class="s2">50</span><span class="s0">,</span>
+                <span class="s1">restTime = </span><span class="s2">22</span><span class="s0">,</span>
+                <span class="s1">exercise = listOf(ex1</span><span class="s0">,</span><span class="s1">ex3</span><span class="s0">,</span><span class="s1">ex4)</span>
+            <span class="s1">)</span>
+
+            <span class="s1">allDao.insertWorkout(wo1)</span>
+            <span class="s1">allDao.insertWorkout(wo2)</span>
+            <span class="s1">allDao.insertWorkout(wo3)</span>
+            <span class="s1">allDao.insertWorkout(wo4)</span>
+
+
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

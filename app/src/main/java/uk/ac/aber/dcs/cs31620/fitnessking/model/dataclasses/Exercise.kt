@@ -1,11 +1,14 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses
 
 data class Exercise(
-    val name: String,
-    val sets: Int,
-    val reps: Int,
-    val weight: Int,
-    val focus: String,
-    val dropSet: Boolean,
-    val image: String
+    var name: String,
+    var sets: Int,
+    var reps: Int,
+    var weight: Int,
+    var isDropSet: Boolean,
+    var length: Int,
+    var image: String,
+    var isFavourite: Boolean,
+    var restTime: Int,
+    var focus: String,
 )

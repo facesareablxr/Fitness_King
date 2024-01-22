@@ -13,16 +13,17 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.util.ResourceUtil
 import java.io.File
 import java.io.IOException
 
+/**
+ * This was again taken from the https://github.com/chriswloftus/feline-adoption-agency-v10/tree/master
+ * but it was given its own class for the sake of keeping code short
+ */
 private fun pictureFromCamera(
     resultLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
     updateFile: (File) -> Unit,
     context: Context
 ) {
-    // Code obtained and adapted from: https://developer.android.com/training/camera/photobasics
-    // See configuration instructions added to AndroidManifest.xml
     val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
     var photoFile: File? = null
-
     // Create the File where the photo should go
     try {
         photoFile = ResourceUtil.createImageFile(context)

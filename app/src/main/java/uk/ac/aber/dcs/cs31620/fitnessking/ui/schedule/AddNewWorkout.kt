@@ -1,15 +1,38 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
@@ -17,149 +40,172 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.launch
 import uk.ac.aber.dcs.cs31620.fitnessking.R
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.SmallTopAppBar
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseViewModel
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutViewModel
-import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
-import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
+import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Exercise
+import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.WorkoutWithExercises
+import uk.ac.aber.dcs.cs31620.fitnessking.model.datafiles.FitnessViewModel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.ButtonSpinner
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.SmallTopAppBar
+
 
 @Composable
-fun AddNewWorkoutTopLevel(
-     navController: NavHostController,
-     workoutViewModel: WorkoutViewModel = viewModel()
-){
-    AddNewWorkout(
-        navController = navController,
-        insertWorkout = { workout ->
-            workoutViewModel.insertWorkout(workout)
+fun AddNewWorkoutTopLevel(navController: NavHostController) {
+    AddNewWorkout(navController)
+}
+
+@Composable
+fun AddNewWorkout(navController: NavHostController) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val fitnessViewModel: FitnessViewModel = viewModel()
+
+    var exercises by remember {
+        mutableStateOf<List<Exercise>>(emptyList())
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        try {
+            val result = fitnessViewModel.readExercises()
+            coroutineScope.launch {
+                exercises = result
+            }
+        } catch (e: Exception) {
+            println("Cannot read exercises")
+        }
+    }
+
+    val values = stringArrayResource(id = R.array.Focus)
+    val focusValues = values.copyOfRange(1, values.size)
+
+    // Get the list of workout days that are not already scheduled
+    val availableDays by remember { fitnessViewModel.getAvailableWorkoutDays() }.observeAsState(emptyList())
+
+    // State for holding selected exercises
+    var selectedExercises by remember { mutableStateOf(emptyList<Exercise>()) }
+
+    // State for workout details
+    var dayOfWorkout by remember { mutableStateOf(availableDays.firstOrNull() ?: "") }
+    var exerciseFocus by remember { mutableStateOf("") }
+    var exerciseLengths by remember { mutableStateOf(emptyList<Int>()) }
+    var workoutLength by remember { mutableStateOf("") }
+
+    // Scaffold for the screen layout
+    Scaffold(
+        topBar = { SmallTopAppBar(navController, title = "Add Workout") },
+        floatingActionButton= {
+            FloatingActionButton(
+                onClick = {
+                    if (dayOfWorkout.isNotEmpty() && exerciseFocus.isNotEmpty() && selectedExercises.isNotEmpty()) {
+                        val workoutWithExercises = WorkoutWithExercises(
+                            dayOfWeek = dayOfWorkout,
+                            focus = exerciseFocus,
+                            exercises = selectedExercises
+                        )
+                        fitnessViewModel.addWorkoutWithExercises(workoutWithExercises)
+
+                        val workoutsWithExercises = fitnessViewModel.getAllWorkoutsWithExercises()
+                        fitnessViewModel.writeWorkoutsWithExercises(workoutsWithExercises)
+
+                        navController.navigateUp()
+                    } else {
+                        coroutineScope.launch {
+                            SnackbarHostState().showSnackbar(
+                                message = "Please fill in all required fields",
+                                actionLabel = "Dismiss",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    }
+                }
+            )
+            {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = stringResource(R.string.addExercise)
+                )
+            }
+        },
+        content = { innerPadding ->
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                // Display day of the week input
+                Text(text = "Day of the week:")
+                DayOfWeekInput(
+                    values = availableDays.toTypedArray(),
+                    modifier = Modifier
+                        .padding(12.dp),
+                    updateDayOfWeek = {
+                        dayOfWorkout = it
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Display focus input
+                Text(text = "Focus:")
+                FocusInput(
+                    values = values,
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .wrapContentWidth(),
+                    updateFocus = {
+                        exerciseFocus = it
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Display exercise selection button
+                var isDialogVisible by remember { mutableStateOf(false) }
+                Button(
+                    onClick = { isDialogVisible = true },
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(12.dp)
+                ) {
+                    Text("Select Exercises")
+                }
+
+                // Display selected exercises
+                Text("Selected Exercises:")
+                selectedExercises.forEach { exercise ->
+                    Text(text = exercise.name)
+                }
+
+                // Exercise selection dialog
+                if (isDialogVisible) {
+                    ExerciseSelectionAlertDialog(
+                        onDismissRequest = {
+                            selectedExercises = selectedExercises
+                            isDialogVisible = false
+                        },
+                        dialogTitle = "Select Exercises",
+                        onExerciseSelected = {
+                            selectedExercises = it
+                            isDialogVisible = false
+
+                            workoutLength = fitnessViewModel.calculateWorkoutLength(selectedExercises, 0)
+                        },
+                        viewModel = fitnessViewModel
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Display workout length
+                WorkoutLength(workoutLength)
+            }
         }
     )
 }
 
-
-@Composable
-fun AddNewWorkout(
-    navController: NavHostController,
-    insertWorkout: (WorkoutEntity) -> Unit = {} ,
-    workoutViewModel: WorkoutViewModel = viewModel()
-) {
-    //Assigning the values for the date and focus arrays
-    var values = stringArrayResource(id = R.array.DayOfWeek)
-    val dayOfWeekValues = values.copyOfRange(1, values.size)
-    values = stringArrayResource(id = R.array.Focus)
-    val focusValues = values.copyOfRange(1, values.size)
-
-
-    //Assigning the variables for the workout components
-    var dayOfWorkout by remember { mutableStateOf(dayOfWeekValues[0]) }
-    var exerciseFocus by remember { mutableStateOf(focusValues[0]) }
-    var length by remember { mutableIntStateOf(60) }
-    var exerciseIds by remember { mutableStateOf(emptyList<Int>()) }
-    var exerciseLengths by remember { mutableStateOf(emptyList<Int>()) }
-    var rest by remember { mutableIntStateOf(5) } // Initial rest time
-    //
-    Scaffold(
-        //
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    insertWorkout(
-                        DaysOfWeek.valueOf(dayOfWorkout), Focus.valueOf(exerciseFocus) , length, exerciseIds
-                    ) { newWorkout ->
-                        insertWorkout(newWorkout)
-                    }
-                },
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = stringResource(id = R.string.addWorkoutButton)
-                )
-            }
-        },
-        // Separated top app bar, under appbars package
-        topBar = {
-            SmallTopAppBar(navController, title = "Add Workout" )
-        }
-    ) { innerPadding ->
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .padding(innerPadding)
-                .wrapContentWidth()
-        ) {
-            Text(text = "Day of the week:")
-            DayOfWeekInput(
-                values = dayOfWeekValues,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .wrapContentWidth(),
-                updateDayOfWeek = {
-                    dayOfWorkout = it
-                }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Focus:")
-            FocusInput(
-                values = focusValues,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .wrapContentWidth(),
-                updateFocus = {
-                    exerciseFocus = it
-                }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(onClick = {
-            //    ExerciseSelectionAlertDialog()
-            }) {
-                Text("Select Exercises")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Rest time:")
-            RestTime(
-                modifier = Modifier,
-                restTimeInMinutes = 0,
-                onRestChange = {
-                    rest = it
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            WorkoutLength(
-                exerciseLengths = exerciseLengths,
-                restTime = rest )
-        }
-    }
-}
-
 /**
- * Function to insert workout into the workout database
- */
-fun insertWorkout(
-    dayOfWeek: DaysOfWeek,
-    focus: Focus,
-    length: Int,
-    exerciseIds: List<Int>,
-    doInsert: (WorkoutEntity) -> Unit = {}
-) {
-    if(exerciseIds.isNotEmpty()){
-        val workout = WorkoutEntity(
-            workoutId = 0,
-            day = dayOfWeek,
-            focus = focus,
-            length =  length
-        )
-        doInsert(workout)
-    }
-}
-
-/**
- * Function to add the information for the day of the week
+ * Function to add workout only on days that are not already scheduled
  */
 @Composable
 fun DayOfWeekInput(
@@ -172,12 +218,13 @@ fun DayOfWeekInput(
         modifier = modifier,
         itemClick = {
             updateDayOfWeek(it)
-        }
+        },
+        label = "Day of Week"
     )
 }
 
 /**
- * Function to add what the focus of the exercise is
+ * Function to display focus input based on available exercises
  */
 @Composable
 fun FocusInput(
@@ -190,30 +237,32 @@ fun FocusInput(
         modifier = modifier,
         itemClick = {
             updateFocus(it)
-        }
+        },
+        label = "Focus"
     )
 }
 
-/**
- * This is the exercise selection box, originally, I had tried to attempt to do it so that you could
- * press + and - to add and remove more exercises, but due to time constraints, I had to simplify.
- */
+
 @Composable
 fun ExerciseSelectionAlertDialog(
     onDismissRequest: () -> Unit,
-    onExerciseSelected: (List<ExerciseEntity>) -> Unit,
-    exerciseViewModel: ExerciseViewModel = viewModel(),
     dialogTitle: String = "Select Exercises",
-    selectedExercises: List<ExerciseEntity> = emptyList()
+    onExerciseSelected: (List<Exercise>) -> Unit,
+    viewModel: FitnessViewModel = viewModel()
 ) {
+    val exercises = viewModel.readExercises()
+    var selectedExercises by remember { mutableStateOf(emptyList<Exercise>()) }
+
     AlertDialog(
         title = { Text(text = dialogTitle) },
         text = {
-            ExerciseSelectionDialogContent(
-                onExerciseSelected,
-                exerciseViewModel,
-                onDismissRequest
-            )
+            if (exercises != null) {
+                ExerciseSelectionDialogContent(
+                    exercises = exercises,
+                    selectedExercises = selectedExercises,
+                    onSelectionChanged = { selectedExercises = it }
+                )
+            }
         },
         onDismissRequest = onDismissRequest,
         confirmButton = {
@@ -229,18 +278,12 @@ fun ExerciseSelectionAlertDialog(
     )
 }
 
-/**
- * This function is to display what exercises are available for the user to select to undertake
- */
 @Composable
 private fun ExerciseSelectionDialogContent(
-    onExerciseSelected: (List<ExerciseEntity>) -> Unit,
-    exerciseViewModel: ExerciseViewModel,
-    onDismissRequest: () -> Unit
+    exercises: List<Exercise>,
+    selectedExercises: List<Exercise>,
+    onSelectionChanged: (List<Exercise>) -> Unit
 ) {
-    val exercises by exerciseViewModel.allExercises.observeAsState(emptyList())
-    var selectedExercises by remember { mutableStateOf(emptyList<ExerciseEntity>()) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -251,69 +294,48 @@ private fun ExerciseSelectionDialogContent(
 
         LazyColumn {
             items(exercises) { exercise ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            // Toggle exercise selection
-                            selectedExercises = if (selectedExercises.contains(exercise)) {
-                                selectedExercises - exercise
-                            } else {
-                                selectedExercises + exercise
-                            }
-                        }
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = selectedExercises.contains(exercise),
-                        onCheckedChange = null // Disable direct checkbox interaction
-                    )
-                    Text(text = exercise.name, modifier = Modifier.padding(start = 16.dp))
-                }
+                ExerciseSelectionItem(exercise, selectedExercises, onSelectionChanged)
             }
         }
     }
 }
 
-/**
- * Function to allow the user to dictate how long they want to rest between sets
- */
 @Composable
-fun RestTime(
-    restTimeInMinutes: Int,
-    onRestChange: (Int) -> Unit,
-    modifier: Modifier
+private fun ExerciseSelectionItem(
+    exercise: Exercise,
+    selectedExercises: List<Exercise>,
+    onSelectionChanged: (List<Exercise>) -> Unit
 ) {
-    var restTime by remember { mutableIntStateOf(restTimeInMinutes) }
+    val isChecked = selectedExercises.contains(exercise)
 
-    Slider(
-        value = restTime.toFloat(),
-        onValueChange = { newValue ->
-            restTime = newValue.toInt()
-            onRestChange(restTime)
-        },
-        valueRange = 0f..30f,
-        steps = 31,
-        onValueChangeFinished = {},
-        modifier = modifier.width(350.dp)
-    )
-    Text(
-        text = "Rest time: $restTime minutes",
-        modifier = Modifier.padding(start = 16.dp)
-    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onSelectionChanged(
+                    if (isChecked) {
+                        selectedExercises - exercise
+                    } else {
+                        selectedExercises + exercise
+                    }
+                )
+            }
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Checkbox(
+            checked = isChecked,
+            onCheckedChange = null
+        )
+        Text(
+            text = exercise.name,
+            modifier = Modifier.padding(start = 16.dp)
+        )
+    }
 }
 
-/**
- * Displays the length of the workout on a container
- */
 @Composable
-fun WorkoutLength(
-    exerciseLengths: List<Int>,
-    restTime: Int
-) {
-    val totalLength = calculateTotalWorkoutLength(exerciseLengths, restTime)
-
+fun WorkoutLength(totalLength: String) {
     Card(
         modifier = Modifier
             .padding(16.dp)
@@ -324,32 +346,7 @@ fun WorkoutLength(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(stringResource(id = R.string.totalTime))
-            Text(
-                text = totalLength.minutesToHoursMinutes()
-            )
+            Text(text = totalLength)
         }
     }
-}
-
-/**
- * Returns the time in minutes or minutes and hours, depending on how long the workout actually is
- */
-fun Int.minutesToHoursMinutes(): String {
-    val hours = this / 60
-    val minutes = this % 60
-    return if (hours > 0) {
-        "$hours hours $minutes minutes"
-    } else {
-        "$minutes minutes"
-    }
-}
-
-/**
- * Calculates the total amount of time for the whole workout
- */
-fun calculateTotalWorkoutLength(exerciseLengths: List<Int>, restTime: Int): Int {
-    if (exerciseLengths.isEmpty()) return 0
-    val totalExerciseTime = exerciseLengths.sum()
-    val totalRestTime = restTime * (exerciseLengths.size - 1)
-    return totalExerciseTime + totalRestTime
 }

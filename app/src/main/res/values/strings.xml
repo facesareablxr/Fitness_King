@@ -34,4 +34,10 @@
     <string name="AddSuccess">Successfully added</string>
     <string name="AddFail">Failed to add, check information and try again</string>
     <string name="dismiss">Dismiss</string>
+    <string name="length">Approximate Length of Exercise</string>
+    <string name="chooseImageSource">Image Source:</string>
+    <string name="takePhoto">Camera</string>
+    <string name="chooseFromGallery">Library</string>
+    <string name="cancel">Cancel</string>
+    <string name="noWorkout">No exercises scheduled for today.</string>
 </resources>

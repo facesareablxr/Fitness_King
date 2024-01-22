@@ -3,7 +3,11 @@ package uk.ac.aber.dcs.cs31620.fitnessking.ui.components
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,14 +15,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uk.ac.aber.dcs.cs31620.fitnessking.R
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
+/**
+ * This is the button spinner for the edit and add screens, it will display a list of items for the
+ * user to choose from and then update the text to display the chosen item.
+ *
+ * Taken from https://github.com/chriswloftus/feline-adoption-agency-v10
+ */
 @Composable
 fun ButtonSpinner(
     items: List<String>,
+    label: String,
     modifier: Modifier = Modifier,
     fontSize: TextUnit = 16.sp,
     itemClick: (String) -> Unit = {}
@@ -35,12 +48,12 @@ fun ButtonSpinner(
             fontSize = fontSize,
             modifier = Modifier.padding(end = 8.dp)
         )
-
+        // Adds the icon to the button
         Icon(
             imageVector = Icons.Filled.ArrowDropDown,
             contentDescription = stringResource(R.string.dropdown)
         )
-
+        // Defines the dropdown menu and its items
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
@@ -52,16 +65,25 @@ fun ButtonSpinner(
                     onClick = {
                         //Collapse the dropdown
                         expanded = false
-
                         // Remember the name of the item selected
                         itemText = it
-
-                        // Hoist the state to the caller
+                        // Return the state to the caller
                         itemClick(it)
                     }
                 )
             }
         }
+    }
+}
+/**
+ * This is the preview for the function above
+ */
+@Composable
+@Preview
+private fun SpinnerPreview() {
+    FitnessKingTheme(dynamicColor = false) {
+        val items = listOf("Exercises", "Squats", "Pullups")
+        ButtonSpinner(items = items, label = "Select Exercise")
     }
 }
 

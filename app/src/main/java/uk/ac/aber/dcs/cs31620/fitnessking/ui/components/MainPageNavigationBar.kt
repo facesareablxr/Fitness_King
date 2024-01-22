@@ -29,6 +29,10 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.screens
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
+/**
+ * This is the main page navigation bar, it has the home, schedule and saved exercises as options
+ * for navigation, modelled on the ones from the FAA application, but adapted to have 3 options
+ */
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun MainPageNavigationBar(navController: NavController) {
@@ -49,7 +53,7 @@ fun MainPageNavigationBar(navController: NavController) {
             label = stringResource(id = R.string.favourite)
         )
     )
-
+        // Navigation bar design and declaration
         NavigationBar(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.contentColorFor(MaterialTheme.colorScheme.surface),
@@ -61,6 +65,7 @@ fun MainPageNavigationBar(navController: NavController) {
                     currentDestination?.hierarchy?.any { it.route == screen.route } == true
                 val labelText = icons[screen]!!.label
                 NavigationBarItem(
+                    // Manages the icon changes
                     icon = {
                         Icon(
                             imageVector = (
@@ -73,6 +78,7 @@ fun MainPageNavigationBar(navController: NavController) {
                     },
                     label = { Text(labelText) },
                     selected = isSelected,
+                    // Manages the navigation
                     onClick = {
                         navController.navigate(screen.route) {
                             popUpTo(navController.graph.findStartDestination().id) {

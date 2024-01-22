@@ -1,6 +1,5 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.ui.util
 
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -15,24 +14,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.FitCenter
 import uk.ac.aber.dcs.cs31620.fitnessking.R
 import java.io.File
 import java.io.IOException
@@ -73,9 +65,8 @@ fun AddNewImage(
         GlideImage(
             model = Uri.parse(imagePath),
             contentDescription = stringResource(R.string.exerciseImage),
-            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(200.dp)
+                .fillMaxSize()
                 .clickable {
                     takePicture(
                         ctx = ctx,

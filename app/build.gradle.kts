@@ -2,7 +2,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
-
 }
 
 android {
@@ -68,6 +67,9 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.test:runner:1.5.2")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.gms:play-services-cast-framework:21.4.0")
+
     platform("androidx.compose:compose-bom:2023.10.01")
 
     implementation("androidx.core:core-ktx:1.12.0")
@@ -99,7 +101,24 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
     implementation("com.github.bumptech.glide:compose:1.0.0-alpha.5")
     implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2")
 
     implementation("io.coil-kt:coil-compose:2.1.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.5.4")
+
+    // CSV specific handling
+    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.9.3")
+
+    // Image handing
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation ("androidx.camera:camera-camera2:1.3.1")
+    implementation ("androidx.camera:camera-lifecycle:1.3.1")
+    implementation( "androidx.camera:camera-view:1.4.0-alpha03")
+    implementation("androidx.activity:activity-ktx:1.8.2")
+
+
 }
 

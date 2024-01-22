@@ -3,35 +3,40 @@ package uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-/**
+/*
  * ExerciseViewModel manages the exercises in the database, uses the Dao class
- * @author Lauren Davis
- */
-class ExerciseViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: ExerciseRepository = ExerciseRepository(application)
-    // LiveData for observing all exercises
-    val allExercises: LiveData<List<ExerciseEntity>> = repository.getAllExercises()
+ * This does not work.
 
-    // Function to insert a new exercise
-    fun insertExercise(exercise: ExerciseEntity): Boolean {
-        repository.insertExercise(exercise)
-        return true // Return result from repository
+class ExerciseViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository: FitnessRepository = FitnessRepository(application)
+
+    val allExercises: LiveData<List<ExerciseEntity>> = repository.allExercises
+
+    fun insertExercise(exercise: ExerciseEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.insertExercise(exercise)
+        }
     }
+
     // Function to update an existing exercise
     fun updateExercise(exercise: ExerciseEntity) {
-        repository.updateExercise(exercise)
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateExercise(exercise)
+        }
     }
+
     // Function to delete an exercise
     fun deleteExercise(exercise: ExerciseEntity) {
-        repository.deleteExercise(exercise)
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteExercise(exercise)
+        }
     }
-
-    fun getExerciseById(exerciseId: Int): ExerciseEntity {
-        return repository.getExerciseById(exerciseId)
-    }
-    // Function to calculate the length of the workout, from the list of exercises
-
-
 
 }
+
+ */

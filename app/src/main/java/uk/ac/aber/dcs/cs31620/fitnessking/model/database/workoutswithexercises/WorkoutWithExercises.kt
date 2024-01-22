@@ -1,24 +1,21 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseEntity
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout.WorkoutEntity
+import androidx.room.Embedded
+import androidx.room.Junction
+import androidx.room.Relation
 
-@Entity(
-    primaryKeys = ["workout_Id","exercise_Id"],
-    foreignKeys = [
-        ForeignKey(
-            entity = WorkoutEntity::class,
-            parentColumns = ["workoutId"],
-            childColumns = ["workout_Id"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
-        ),
-        ForeignKey(entity = ExerciseEntity::class,parentColumns = ["exerciseId"],childColumns = ["exercise_Id"])
-    ]
-)
+/*
+This is the workoutwithexercises class, it has relations between workout entity and exercise entity.
+This does not work.
+
+
 data class WorkoutWithExercises(
-    val workout_Id: Long,
-    var exercise_Id: Long
+    @Embedded
+    val workout: WorkoutEntity,
+   // @Relation(entityColumn = "exerciseName", parentColumn = "exerciseName")
+    @Embedded
+    val exercises: ExerciseEntity
 )
+
+
+ */

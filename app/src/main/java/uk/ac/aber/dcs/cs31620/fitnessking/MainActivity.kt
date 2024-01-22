@@ -6,20 +6,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise.ExerciseViewModel
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling.AddNewExerciseTopLevel
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.home.HomeScreen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling.EditExerciseTopLevel
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling.AddNewExerciseTopLevel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.exercisehandling.SavedExerciseTopLevel
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.home.HomeScreen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule.AddNewWorkoutTopLevel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule.ScheduleScreenTopLevel
 
@@ -28,7 +28,6 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule.ScheduleScreenTopLevel
  * @author Chris Loftus
  */
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -46,11 +45,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun BuildNavigationGraph(
-    exerciseViewModel: ExerciseViewModel = viewModel(),
-    navController: NavController = rememberNavController()
-) {
+private fun BuildNavigationGraph() {
     val navController = rememberNavController()
+    var exerciseName by remember { mutableStateOf("") }
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route
@@ -60,7 +57,6 @@ private fun BuildNavigationGraph(
         composable(Screen.Saved.route) { SavedExerciseTopLevel(navController) }
         composable(Screen.AddExercise.route){ AddNewExerciseTopLevel(navController) }
         composable(Screen.AddWorkout.route){ AddNewWorkoutTopLevel(navController)}
-        composable(Screen.EditExercise.route){ EditExerciseTopLevel(navController)}
     }
 }
 
@@ -71,3 +67,4 @@ fun DefaultPreview() {
         BuildNavigationGraph()
     }
 }
+
