@@ -9,6 +9,16 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
+/**
+ * A composable version of OutlinedTextField with added functionality to dismiss the keyboard on outside click.
+ *
+ * @param value is the current text value of the text field.
+ * @param onValueChange is the callback for when the value changes.
+ * @param modifier is the modifier for styling and layout.
+ * @param label is the composable content for the text field label.
+ * @param keyboardOptions is the options for configuring the keyboard.
+ * @param keyboardActions is the actions for configuring keyboard behavior.
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OutlinedTextFieldWithKeyboardDismiss(

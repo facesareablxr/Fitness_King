@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="workoutName">Name</string-array>
+    <string-array name="reps">Wiederholungen</string-array>
+    <string-array name="sets">Sätze</string-array>
+    <string-array name="dropset">Dropset</string-array>
+    <string-array name="DayOfWeek">
+        <item>Jeder Tag</item>
+        <item>Montag</item>
+        <item>Dienstag</item>
+        <item>Mittwoch</item>
+        <item>Donnerstag</item>
+        <item>Freitag</item>
+        <item>Samstag</item>
+        <item>Sonntag</item>
+    </string-array>
+    <string-array name="Focus">
+        <item>Jeder Fokus</item>
+        <item>Arme</item>
+        <item>Beine</item>
+        <item>Rücken</item>
+        <item>Brust</item>
+        <item>Cardio</item>
+        <item>Stärke</item>
+        <item>Ganzkörper</item>
+    </string-array>
+</resources>

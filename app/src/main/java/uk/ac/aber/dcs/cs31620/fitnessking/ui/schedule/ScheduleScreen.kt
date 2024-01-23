@@ -1,22 +1,29 @@
-@file:Suppress("PreviewAnnotationInFunctionWithParameters")
-
 package uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,12 +48,10 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 
 /**
- * Represents the Schedule Screen, displaying each workout scheduled for the week.
- * Allows users to select a card to view the workout in more detail.
- *
- * Author: Lauren Davis
+ * Top-level composable function for the Schedule Screen.
+ * @param navController is the NavHostController for navigation
+ * @param viewModel is the FitnessViewModel for accessing workout data
  */
-
 @Composable
 fun ScheduleScreenTopLevel(
     navController: NavHostController,
@@ -54,10 +59,12 @@ fun ScheduleScreenTopLevel(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-
+    // State variable for storing the list of workouts for the week
     var workoutsForWeek by remember {
         mutableStateOf<List<WorkoutWithExercises>>(emptyList())
     }
+
+    // Fetching workouts for the week asynchronously
     LaunchedEffect(key1 = Unit) {
         try {
             val result = viewModel.readWorkoutsWithExercises()
@@ -70,23 +77,25 @@ fun ScheduleScreenTopLevel(
     }
 
     // Display the Schedule Screen
-    ScheduleScreen(navController, workoutsForWeek, viewModel)
+    ScheduleScreen(navController, workoutsForWeek, onDelete = { deletedWorkout ->
+        // Remove the deleted workout from the list
+        workoutsForWeek = workoutsForWeek.filter { it.dayOfWeek != deletedWorkout }
+    })
 }
 
 /**
  * Represents the Schedule Screen content, displaying each workout scheduled for the week.
- *
- * @param navController: NavHostController used for navigation
- * @param workoutsForWeek: List of workouts with exercises
- * @param viewModel: FitnessViewModel for accessing workout data
+ * @param navController is the NavHostController for navigation
+ * @param workoutsForWeek is the list of workouts with exercises for the week
+ * @param onDelete is the callback for deleting a workout
  */
 @Composable
 fun ScheduleScreen(
     navController: NavHostController,
     workoutsForWeek: List<WorkoutWithExercises>,
-    viewModel: FitnessViewModel
+    onDelete: (String) -> Unit
 ) {
-    // Coroutine scope for asynchronous operations
+    // Coroutine scope for handling asynchronous operations
     val coroutineScope = rememberCoroutineScope()
 
     // Display the Top Level Scaffold with a floating action button
@@ -94,6 +103,7 @@ fun ScheduleScreen(
         navController = navController,
         coroutineScope = coroutineScope,
         floatingActionButton = {
+            // Floating action button for adding a new workout
             FloatingActionButton(
                 onClick = {
                     navController.navigate(Screen.AddWorkout.route)
@@ -110,9 +120,7 @@ fun ScheduleScreen(
                     .fillMaxSize()
             ) {
                 // Display the Schedule Screen Content
-                ScheduleScreenContent(workoutsForWeek, viewModel) {
-                    // Handle workout click (if needed)
-                }
+                ScheduleScreenContent(workoutsForWeek, onDelete)
             }
         }
     )
@@ -120,55 +128,97 @@ fun ScheduleScreen(
 
 /**
  * Represents the Schedule Screen content, displaying each workout scheduled for the week.
- *
- * @param workoutsForWeek: List of workouts with exercises
- * @param viewModel: FitnessViewModel for accessing workout data
- * @param onWorkoutClick: Callback for handling workout click events
+ * @param workoutsForWeek is the list of workouts with exercises for the week
+ * @param onDelete is the callback for deleting a workout
  */
 @Composable
 fun ScheduleScreenContent(
     workoutsForWeek: List<WorkoutWithExercises>,
-    viewModel: FitnessViewModel,
-    onWorkoutClick: () -> Unit
+    onDelete: (String) -> Unit
 ) {
+    // List of days in order
+    val dayOrder = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    // Sorting workouts based on the order of days
+    val sortedWorkouts = workoutsForWeek.sortedBy { dayOrder.indexOf(it.dayOfWeek) }
+
     // LazyColumn for displaying workout cards
     LazyColumn {
-        items(workoutsForWeek) { workout ->
+        items(sortedWorkouts) { workout ->
             // Display each Workout Card
-            WorkoutCard(workout, onWorkoutClick)
+            WorkoutCard(workout, onDelete)
         }
     }
 }
 
-
 /**
  * Represents a stylized workout card that displays workout details.
- *
- * @param workout: WorkoutWithExercises object
- * @param onWorkoutClick: Callback for handling workout click events
+ * @param workout is the WorkoutWithExercises object to display
+ * @param onDelete is the callback for deleting a workout
  */
 @Composable
-fun WorkoutCard(workout: WorkoutWithExercises, onWorkoutClick: () -> Unit) {
+fun WorkoutCard(
+    workout: WorkoutWithExercises,
+    onDelete: (String) -> Unit
+) {
     // Check if there is at least one exercise in the workout
     workout.exercises.firstOrNull()?.let { firstExercise ->
         // Create a painter for the image
         val painter = rememberAsyncImagePainter(model = firstExercise.image)
 
+        // Mutable state for handling dropdown menu visibility
+        var isMenuVisible by remember { mutableStateOf(false) }
+
         // Card with rounded corners
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            shape = RoundedCornerShape(8.dp),
-            onClick = onWorkoutClick
+                .padding(26.dp),
+            shape = RoundedCornerShape(8.dp)
         ) {
             // Column for organizing workout details
             Column(
                 modifier = Modifier
                     .padding(16.dp)
             ) {
-                // Workout day
-                Text(text = workout.dayOfWeek, fontWeight = FontWeight.Bold)
+                // Row for workout day and three-dot button
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Workout day
+                    Text(text = workout.dayOfWeek, fontWeight = FontWeight.Bold)
+
+                    // Three-dot button
+                    Box {
+                        IconButton(
+                            onClick = { isMenuVisible = true },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+                        }
+                        DropdownMenu(
+                            expanded = isMenuVisible,
+                            onDismissRequest = { isMenuVisible = false },
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .padding(8.dp)
+                        ) {
+                            // Dropdown menu item for deleting the workout
+                            DropdownMenuItem(
+                                onClick = {
+                                    isMenuVisible = false
+                                    onDelete(workout.dayOfWeek)
+                                }
+                            ) {
+                                Text("Delete Workout")
+                            }
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Workout focus
@@ -194,6 +244,7 @@ fun WorkoutCard(workout: WorkoutWithExercises, onWorkoutClick: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 workout.exercises.forEach { exercise ->
+                    // Display details for each exercise
                     Text(
                         text = "${exercise.name} - ${exercise.sets} sets | ${exercise.reps} reps | ${exercise.weight} kg"
                     )

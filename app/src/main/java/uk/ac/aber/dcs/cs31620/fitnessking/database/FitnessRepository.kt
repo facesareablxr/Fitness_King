@@ -1,9 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.model.database
-
-import android.app.Application
-import androidx.lifecycle.LiveData
-import kotlinx.coroutines.flow.Flow
-import java.time.DayOfWeek
+package uk.ac.aber.dcs.cs31620.fitnessking.database
 
 /*
 This is the repository class, this would manage the data between the DAO and the view model.

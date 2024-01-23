@@ -63,28 +63,23 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 
 /**
- * This is the saved exercise screen where the user can view, edit, favourite, search, filter
- * their saved exercises. From here, they can add new ones by clicking on the floating action button
- * or editing a saved one by clicking on it, this will load a dialog where they can select to edit it.
- * @author Lauren Davis
+ * This file contains the implementation for the "Saved Exercise" screen, where users can view, edit, favorite,
+ * search, filter their saved exercises. They can also add new exercises or edit existing ones by clicking on
+ * the floating action button or the exercise card, respectively.
  */
 
 /**
- * This is the top level of the class, this manages the calling of saved exercise screen and is used
- * to call the screen in the navigation graph.
- * @param navController is the NavHostController, it links the screen with the navigation graph
+ * Top-level composable function.
+ * @param navController is the NavHostController, linking the screen with the navigation graph
  * @param fitnessViewModel is the viewModel set up to manage csv/text files
- *
  */
-
 @Composable
 fun SavedExerciseTopLevel(
     navController: NavHostController,
     fitnessViewModel: FitnessViewModel = viewModel()
 ) {
-    var exerciseName by remember { mutableStateOf("") }
+    // Initialization of variables and fetching saved exercises from the view model
     val coroutineScope = rememberCoroutineScope()
-
     var exercises by remember {
         mutableStateOf<List<Exercise>>(emptyList())
     }
@@ -96,15 +91,17 @@ fun SavedExerciseTopLevel(
                 exercises = result
             }
         } catch (e: Exception) {
-            // Handle the exception or log it
+            println("No exercises found")
         }
     }
+
+    // State variables for search, filter, and filter dropdown
     var searchQuery by remember { mutableStateOf("") }
     var isFavouritesOnly by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
 
+    // Calling the Saved Exercise screen
     SavedExerciseScreen(
-        modifier = Modifier.padding(8.dp),
         navController = navController,
         exerciseList = exercises,
         searchQuery = searchQuery,
@@ -114,29 +111,26 @@ fun SavedExerciseTopLevel(
         onToggleFilterDropdown = { expanded = !expanded },
         expanded = expanded,
         onDelete = { deletedExerciseName ->
-            // Update the state when an exercise is deleted
             exercises = exercises.filter { it.name != deletedExerciseName }
-        }
+        },
+        fitnessViewModel = fitnessViewModel
     )
 }
 
-
-
 /**
- * This is the saved exercise screen, it lays out the scaffold for the screen and lays out the
- * key elements for the screen.
- * @param navController is the same as before
+ * Composable function representing the Saved Exercise screen. Users can view, filter, and search for
+ * their saved exercises. It also provides the option to add new exercises.
+ * @param navController is the NavHostController, linking the screen with the navigation graph
  * @param exerciseList is the list of exercises in the format defined in the Exercise data class
  * @param searchQuery is the query input by the user
- * @param isFavouritesOnly is the filter function which reduces the list down to only the favourites
+ * @param isFavouritesOnly is the filter function that reduces the list down to only the favorites
  * @param onSearchQueryChanged updates the query as it is changed by the user
  * @param onFavouritesFilterChanged updates the filter
  * @param onToggleFilterDropdown updates whether the filter options are chosen or not
- * @param expanded is for the dropdown menu, is it closed or open
+ * @param expanded is for the dropdown menu, indicating if it is closed or open
  */
 @Composable
 fun SavedExerciseScreen(
-    modifier: Modifier,
     navController: NavHostController,
     exerciseList: List<Exercise>,
     searchQuery: String,
@@ -146,15 +140,17 @@ fun SavedExerciseScreen(
     onToggleFilterDropdown: () -> Unit,
     expanded: Boolean,
     onDelete: (String) -> Unit,
+    fitnessViewModel: FitnessViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Setting up the top-level scaffold
     TopLevelScaffold(
         coroutineScope = coroutineScope,
         navController = navController,
         floatingActionButton = {
-            //This is the floating action button which allows the user to navigate to the AddExercise screen
+            // Floating action button for adding a new exercise
             FloatingActionButton(
                 onClick = {
                     navController.navigate(Screen.AddExercise.route)
@@ -173,12 +169,13 @@ fun SavedExerciseScreen(
             }
         },
         pageContent = {
+            // Main content of the Saved Exercise screen
             Column(modifier = Modifier.padding(it)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    //This is the search bar
+                    // Search bar
                     TextField(
                         value = searchQuery,
                         onValueChange = onSearchQueryChanged,
@@ -199,54 +196,66 @@ fun SavedExerciseScreen(
                         FilterButton(onToggleFilterDropdown, expanded, onFavouritesFilterChanged)
                     }
                 }
+                // Content displaying saved exercises
                 SavedExerciseContent(
                     exerciseList,
-                    navController,
                     searchQuery,
                     isFavouritesOnly,
-                    onDelete
+                    onDelete,
+                    fitnessViewModel
                 )
-
             }
         }
     )
 }
 
-
-
 /**
- * This is the SavedExerciseContent screen where the content for the screen is being defined.
- * @param exercises same as before,
- * @param navController same as before,
- * @param searchQuery same as before,
- * @param isFavouritesOnly same as before,
- * @param onFavouriteClicked same as before
+ * Composable function for the content of the Saved Exercise screen. It displays the saved exercises,
+ * allowing filtering and searching.
+ * @param exercises is the same as before,
+ * @param searchQuery is the same as before,
+ * @param isFavouritesOnly is the same as before,
  */
 @Composable
 fun SavedExerciseContent(
     exercises: List<Exercise>,
-    navController: NavHostController,
     searchQuery: String,
     isFavouritesOnly: Boolean,
-    onDelete: (String) -> Unit
+    onDelete: (String) -> Unit,
+    fitnessViewModel: FitnessViewModel
 ) {
+    // Filtering exercises based on search and favorites criteria
     val filteredExercises = exercises.filter { exercise ->
         exercise.name.contains(searchQuery, ignoreCase = true) &&
                 (!isFavouritesOnly || exercise.isFavourite)
     }
 
+    // Lazy column for displaying the filtered exercises
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         items(filteredExercises) { exercise ->
-            ExerciseCard(exercise, navController, onDelete)
+            // Displaying each exercise as a card
+            ExerciseCard(exercise, onDelete, onFavouriteToggle = { exerciseName ->
+                val updatedExercises = exercises.map {
+                    if (it.name == exerciseName) {
+                        it.copy(isFavourite = !it.isFavourite)
+                    } else {
+                        it
+                    }
+                }
+                fitnessViewModel.updateExercisesFile(updatedExercises)
+            })
         }
     }
 }
 
 /**
- * This is the filter button, so far only has 2 filters, favourite and all exercises.
+ * Composable function for the filter button, allowing the user to filter exercises by favorites.
+ * @param onToggleFilterDropdown updates whether the filter options are chosen or not
+ * @param expanded is for the dropdown menu, is it closed or open
+ * @param onFavouritesFilterChanged updates the filter
  */
 @Composable
 private fun FilterButton(
@@ -279,32 +288,29 @@ private fun FilterButton(
     }
 }
 
-
 /**
- * This is the ExerciseCard class where the cards for each exercise are constructed using the information
- * stored in the database.
+ * Composable function for the Exercise Card, displaying details for each saved exercise.
  * @param exercise is the same as before,
- * @param navController is the same as before,
- * @param onFavouriteClicked is the same as before.
  */
 @Composable
 fun ExerciseCard(
     exercise: Exercise,
-    navController: NavHostController,
     onDelete: (String) -> Unit,
+    onFavouriteToggle: (String) -> Unit
 ) {
     val showDialog = remember { mutableStateOf(false) }
-    val showDeleteDialog = remember { mutableStateOf(false) }
-    // This is the card itself
+
+    // Card displaying each exercise
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(12.dp)
             .clickable { showDialog.value = true },
         shape = RoundedCornerShape(8.dp),
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Leading image
@@ -319,11 +325,11 @@ fun ExerciseCard(
                 alignment = Alignment.Center
             )
             Spacer(modifier = Modifier.width(16.dp))
-            // This is the details for the card, only basic sets | reps | weight
+            // Details for the card (name, sets, reps, weight)
             Column {
                 Text(
                     text = exercise.name,
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -331,74 +337,52 @@ fun ExerciseCard(
                     Text(
                         text = "Sets: ${exercise.sets} | Reps: ${exercise.reps} | Weight: ${exercise.weight} kg",
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(start = 16.dp)
                     )
                 }
             }
-            // This is handling the favourites
+            // Favourites handling
             Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = {
-                //onFavouriteClicked(exercise)
-            }) {
+            var isFavorite by remember { mutableStateOf(exercise.isFavourite) }
+            IconButton(
+                onClick = {
+                    // Toggle the favorite status when the button is clicked
+                    isFavorite = !isFavorite
+
+                    // Call onFavouriteToggle with the updated favorite status
+                    onFavouriteToggle(exercise.name)
+                }
+            ) {
                 Icon(
-                    imageVector = if (exercise.isFavourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    imageVector = if (isFavorite) {
+                        Icons.Filled.Favorite
+                    } else {
+                        Icons.Filled.FavoriteBorder
+                    },
                     contentDescription = "Favourite"
                 )
             }
         }
-
-        ExerciseCardExpandedDetails(showDialog, exercise, navController, onDelete)
-
-        // Delete dialog with its own showDialog value
-        if (showDeleteDialog.value) {
-            AlertDialog(
-                onDismissRequest = { showDeleteDialog.value = false },
-                title = {
-                    Text(text = "Delete Exercise")
-                },
-                text = {
-                    Text(text = "Are you sure you want to delete this exercise?")
-                },
-                buttons = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        TextButton(onClick = { showDeleteDialog.value = false }) {
-                            Text("Cancel")
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        TextButton(onClick = {
-                            // Handle delete action
-                            showDeleteDialog.value = false
-                        }) {
-                            Text("Delete")
-                        }
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(align = Alignment.Bottom)
-            )
-        }
+        // Details dialog for each exercise
+        ExerciseCardExpandedDetails(showDialog, exercise, onDelete)
     }
 }
 
+/**
+ * Composable function for the expanded details dialog of an Exercise Card.
+ * @param showDialog indicates whether the details dialog is shown
+ * @param exercise is the same as before,
+ */
 @Composable
 private fun ExerciseCardExpandedDetails(
     showDialog: MutableState<Boolean>,
     exercise: Exercise,
-    navController: NavHostController,
     onDelete: (String) -> Unit
 ) {
-    val fitnessViewModel: FitnessViewModel = viewModel()
-    val showDropdown = remember { mutableStateOf(false) }
-
     if (showDialog.value) {
         AlertDialog(
             onDismissRequest = { showDialog.value = false },
             text = {
+                // Exercise details in the dialog
                 Column {
                     Row(
                         modifier = Modifier
@@ -461,15 +445,15 @@ private fun ExerciseCardExpandedDetails(
                         .fillMaxWidth()
                         .clickable {}
                 ) {
+                    // Close button
                     TextButton(onClick = {
-                        // Handle close action
                         showDialog.value = false
                     }) {
                         Text("Close")
                     }
                     Spacer(modifier = Modifier.weight(1f))
+                    // Delete button
                     TextButton(onClick = {
-                        // Call onDelete when the Delete button is clicked
                         onDelete(exercise.name)
                         showDialog.value = false
                     }) {
@@ -484,4 +468,3 @@ private fun ExerciseCardExpandedDetails(
         )
     }
 }
-

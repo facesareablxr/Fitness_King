@@ -23,10 +23,16 @@ import uk.ac.aber.dcs.cs31620.fitnessking.R
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
 /**
- * This is the button spinner for the edit and add screens, it will display a list of items for the
- * user to choose from and then update the text to display the chosen item.
+ * Composable for a button spinner used in edit and add screens. It displays a list of items for the
+ * user to choose from and updates the text to display the chosen item.
  *
- * Taken from https://github.com/chriswloftus/feline-adoption-agency-v10
+ * Adapted from https://github.com/chriswloftus/feline-adoption-agency-v10 with the addition of a default label.
+ *
+ * @param items is the list of items to choose from
+ * @param label is the default label to display
+ * @param modifier is the modifier for the button spinner
+ * @param fontSize is the font size of the displayed text
+ * @param itemClick is the callback function when an item is selected
  */
 @Composable
 fun ButtonSpinner(
@@ -36,7 +42,8 @@ fun ButtonSpinner(
     fontSize: TextUnit = 16.sp,
     itemClick: (String) -> Unit = {}
 ) {
-    var itemText by rememberSaveable { mutableStateOf(if (items.isNotEmpty()) items[0] else "") }
+    // Adds a default label, this was done after encountering issues displaying the days of the week as labels, inefficient, but it works.
+    var itemText by rememberSaveable { mutableStateOf(if (items.isNotEmpty()) items[0] else label) }
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     OutlinedButton(
@@ -63,7 +70,7 @@ fun ButtonSpinner(
                 DropdownMenuItem(
                     text = { Text(text = it) },
                     onClick = {
-                        //Collapse the dropdown
+                        // Collapse the dropdown
                         expanded = false
                         // Remember the name of the item selected
                         itemText = it
@@ -75,8 +82,9 @@ fun ButtonSpinner(
         }
     }
 }
+
 /**
- * This is the preview for the function above
+ * Preview function
  */
 @Composable
 @Preview
@@ -86,4 +94,3 @@ private fun SpinnerPreview() {
         ButtonSpinner(items = items, label = "Select Exercise")
     }
 }
-

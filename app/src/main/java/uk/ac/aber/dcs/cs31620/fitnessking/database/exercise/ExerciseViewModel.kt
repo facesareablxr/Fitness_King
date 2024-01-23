@@ -1,12 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise
-
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+package uk.ac.aber.dcs.cs31620.fitnessking.database.exercise
 
 /*
  * ExerciseViewModel manages the exercises in the database, uses the Dao class

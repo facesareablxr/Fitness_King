@@ -6,6 +6,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+/**
+ * This was imported from the M3 design picker too but left as is. 
+ */
 // Set of Material typography styles to start with
 val Typography = Typography(
         bodyLarge = TextStyle(

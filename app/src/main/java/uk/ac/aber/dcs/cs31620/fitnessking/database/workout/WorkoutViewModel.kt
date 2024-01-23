@@ -1,13 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout
-
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.time.LocalDate
+package uk.ac.aber.dcs.cs31620.fitnessking.database.workout
 
 /*
 This is the workout view model class, it handles the operations such as search, insert and update

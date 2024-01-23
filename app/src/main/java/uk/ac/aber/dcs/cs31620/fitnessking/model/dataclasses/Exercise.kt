@@ -1,5 +1,8 @@
 package uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses
 
+/**
+ * Exercise data class, used mainly in WorkoutWithExerciseManagement
+ */
 data class Exercise(
     var name: String,
     var sets: Int,

@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.model.database.workoutswithexercises
+package uk.ac.aber.dcs.cs31620.fitnessking.database.workoutswithexercises
 
 import androidx.room.Embedded
 import androidx.room.Junction

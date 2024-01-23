@@ -107,7 +107,7 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    private fun updateExercisesFile(exercises: List<Exercise>) {
+    fun updateExercisesFile(exercises: List<Exercise>) {
         try {
             exerciseFile.writeText("")
 

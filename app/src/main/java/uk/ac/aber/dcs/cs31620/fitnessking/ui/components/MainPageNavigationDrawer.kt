@@ -2,6 +2,7 @@ package uk.ac.aber.dcs.cs31620.fitnessking.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,20 +29,24 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
+import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.ItemData
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
 /**
- * This is the navigation drawer, this will be accessible through the uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.MainPageTopAppBar, it has the option
- * to go to similar choices as MainPageNavigation bar but with added profile and settings page (which at
- * this time do not have functionality)
+ * This composable represents the navigation drawer accessible through MainPageTopAppBar.
+ * It provides options to navigate to screens such as home, schedule, saved exercises, profile, and settings.
+ *
+ * @param navController is the NavHostController for navigation
+ * @param drawerState is the state of the drawer (open or closed)
+ * @param closeDrawer is a callback to close the drawer
+ * @param content is the main content of the drawer
  */
 @Composable
 fun MainPageNavigationDrawer(
@@ -50,39 +55,56 @@ fun MainPageNavigationDrawer(
     closeDrawer: () -> Unit = {},
     content: @Composable () -> Unit = {}
 ) {
+    // List of navigation drawer items
     val items = listOf(
         ItemData(Icons.Default.Home, stringResource(R.string.home), Screen.Home.route),
         ItemData(Icons.Default.CalendarMonth, stringResource(R.string.schedule), Screen.Schedule.route),
         ItemData(Icons.Default.Favorite, stringResource(R.string.favourite), Screen.Saved.route),
-        ItemData(Icons.Default.Settings, stringResource(R.string.settings), "settings_screen_route")
+        ItemData(Icons.Default.Settings, stringResource(R.string.settings), Screen.Settings.route)
     )
-    // Navigation drawer design and initialisation
+
+    // Navigation drawer design and initialization
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             val selectedItem = rememberSaveable { mutableIntStateOf(0) }
+
             ModalDrawerSheet {
                 Spacer(modifier = Modifier.height((26.dp)))
-                // This is where the profile section is displayed
-                Image(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Profile",
-                    modifier = Modifier
-                        .size(50.dp)
-                        .fillMaxWidth()
-                        .align(CenterHorizontally),
-                )
-                // Auto-set to my own name, I would like to add the ability to log in and update if I have time
-                NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.username), modifier = Modifier.padding(16.dp)) },
-                    selected = false,
-                    onClick = { /* Handle profile click */ }
-                )
+
+                // Profile section
+                Row(
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Image(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Profile",
+                        modifier = Modifier
+                            .size(50.dp)
+                            .fillMaxWidth()
+                    )
+
+                    // Auto-set to my own name, the ability to log in and update could be added in the future
+                    NavigationDrawerItem(
+                        label = {
+                            Text(
+                                stringResource(R.string.username),
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        },
+                        selected = false,
+                        onClick = { navController.navigate(Screen.Profile.route) }
+                    )
+                }
+
+                // Divider
                 Divider(
                     modifier = Modifier
                         .padding(20.dp, 0.dp)
                         .align(CenterHorizontally),
                 )
+
+                // Navigation items
                 Column(
                     horizontalAlignment = CenterHorizontally,
                     modifier = Modifier
@@ -118,17 +140,9 @@ fun MainPageNavigationDrawer(
     )
 }
 
-/**
- * This is just a data class to allow for better management of the item data
- */
-data class ItemData(
-    val icon: ImageVector,
-    val label: String,
-    val route: String
-)
 
 /**
- * This is the preview for the navigation drawer
+ * Preview function
  */
 @Preview
 @Composable

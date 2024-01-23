@@ -14,10 +14,11 @@ import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
-
 /**
- * This is the small top app bar, it passes the title through its parameter to determine the
- * text in the bar
+ * Composable for a small top app bar. It displays a title passed through its parameter and includes a back button.
+ *
+ * @param navController is the NavController for navigation control
+ * @param title is the title text to be displayed in the app bar
  */
 @Composable
 fun SmallTopAppBar(navController: NavController, title: String) {
@@ -28,12 +29,12 @@ fun SmallTopAppBar(navController: NavController, title: String) {
         navigationIcon = {
             IconButton(
                 onClick = {
-                    navController.navigateUp() // This will return to the previous screen
+                    navController.navigateUp() // Navigate back to the previous screen
                 }
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.goBack) // This is just the back button
+                    contentDescription = stringResource(id = R.string.goBack) // Description for the back button
                 )
             }
         }
@@ -41,7 +42,7 @@ fun SmallTopAppBar(navController: NavController, title: String) {
 }
 
 /**
- * This is just a preview
+ * Preview function
  */
 @Preview
 @Composable

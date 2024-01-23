@@ -43,35 +43,31 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.util.AddNewImage
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.util.OutlinedTextFieldWithKeyboardDismiss
 
 /**
- * This file is the screen where the user is able to add new exercises to the exercise database,
- * it will enforce a numbers only for sets, weights, and reps. It will also allow the user to select
- * an image and type a name in for the exercise. Once the button is pressed, the program will then
- * add the exercise into the csv if it meets the requirements, ideally, all boxes should be filled
- * in before doing this.
- */
-
-/**
- * Top level function which calls the required information to pass through to the screen itself.
+ * Top-level composable function that initializes the required information and passes it to the screen.
+ *
+ * @param navController is the navigation controller for managing navigation within the app.
  */
 @Composable
 fun AddNewExerciseTopLevel(
     navController: NavHostController,
-){
+) {
     AddNewExercise(
         navController = navController
     )
 }
 
 /**
- * This function is the screen itself, it has a scaffold of all the required information for the exercises
- * which is then passed through each individual box for the user to update.
+ * Composable function representing the Add Exercise screen. Users can input various details about
+ * their exercise, and upon pressing the floating action button, the information is added to a CSV file.
+ *
+ * @param navController is the navigation controller for managing navigation within the app.
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddNewExercise(
     navController: NavController
 ) {
-    //Initialisation of the variables
+    // Initialization of variables
     val values = stringArrayResource(id = R.array.Focus)
     val focusValues = values.copyOfRange(1, values.size)
     var name by remember { mutableStateOf("") }
@@ -83,27 +79,28 @@ fun AddNewExercise(
     var image by remember { mutableStateOf("") }
     val favourite by remember { mutableStateOf(false) }
     var rest by remember { mutableIntStateOf(0) }
-    var focus by remember { mutableStateOf(focusValues[0])}
+    var focus by remember { mutableStateOf(focusValues[0]) }
 
     val fitnessViewModel: FitnessViewModel = viewModel()
     val coroutineScope = rememberCoroutineScope()
 
-    //This is for the control of the keyboard
+    // Keyboard control and toast message
     val keyboardController = LocalSoftwareKeyboardController.current
-    // This is for the toast message
     var areFieldsValid by remember { mutableStateOf(true) }
 
-    //Scaffold for the screen itself
+    // Scaffold for the screen
     Scaffold(
         topBar = {
-            //This app bar is different to the main one, it will allow the user to go back on themselves
-            SmallTopAppBar(navController, title = stringResource(id = R.string.addExercise)) 
+            // Custom app bar allowing the user to navigate back
+            SmallTopAppBar(navController, title = stringResource(id = R.string.addExercise))
         },
-        // Floating action button for the addition of the exercise
+        // Floating action button for adding the exercise
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (name.isNotEmpty() && sets > 0 && reps > 0 && image.isNotEmpty() && focus.isNotEmpty() && lengthOfExercise > 0 && rest > 0) {
+                    if (name.isNotEmpty() && sets > 0 && reps > 0 && image.isNotEmpty() &&
+                        focus.isNotEmpty() && lengthOfExercise > 0 && rest > 0
+                    ) {
                         fitnessViewModel.addExercise(
                             name = name,
                             sets = sets,
@@ -129,7 +126,7 @@ fun AddNewExercise(
                     }
                 }
             )
-                {
+            {
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = stringResource(R.string.addExercise)
@@ -141,11 +138,11 @@ fun AddNewExercise(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .clickable { keyboardController?.hide() } ,
+                    .clickable { keyboardController?.hide() },
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Add new image box 
+                // Add new image box
                 item {
                     AddNewImageBox(
                         image = image,
@@ -157,7 +154,7 @@ fun AddNewExercise(
                         }
                     )
                 }
-                // Exercise name input box 
+                // Exercise name input box
                 item {
                     Spacer(modifier = Modifier.padding(4.dp))
                     ExerciseNameInput(
@@ -169,7 +166,7 @@ fun AddNewExercise(
                         }
                     )
                 }
-                // Exercise focus drop down box 
+                // Exercise focus drop down box
                 item {
                     Spacer(modifier = Modifier.padding(4.dp))
                     ExerciseFocus(
@@ -183,7 +180,7 @@ fun AddNewExercise(
                         }
                     )
                 }
-                // Sets input box 
+                // Sets input box
                 item {
                     Spacer(modifier = Modifier.padding(4.dp))
                     SetsInput(
@@ -265,7 +262,7 @@ fun AddNewExercise(
 }
 
 /**
- * This is where the user will input the name of the exercise.
+ * Composable function for the exercise name input.
  * @return the name for the exercise
  */
 @Composable
@@ -279,14 +276,14 @@ fun ExerciseNameInput(
         label = {
             Text(text = stringResource(id = R.string.addExerciseName))
         },
-        onValueChange = {updateName(it)},
+        onValueChange = { updateName(it) },
         modifier = modifier
     )
 }
 
 /**
- * Function to add what the focus of the exercise is
- * @return focus of exercise
+ * Composable function to select the focus of the exercise.
+ * @return the focus of the exercise
  */
 @Composable
 fun ExerciseFocus(
@@ -304,10 +301,8 @@ fun ExerciseFocus(
     )
 }
 
-
-
 /**
- * This is where the user is able to input the number of sets they want to do.
+ * Composable function for inputting the number of sets.
  * @return the updated number of sets
  */
 @Composable
@@ -315,9 +310,8 @@ fun SetsInput(
     sets: Int,
     modifier: Modifier,
     updateSet: (Int) -> Unit
-){
-    // This is the outlined text field which dismisses the keyboard when pressed outside the area, or pressing enter,
-    // it is used throughout this screen
+) {
+    // Outlined text field for numeric input
     OutlinedTextFieldWithKeyboardDismiss(
         value = sets.toString(),
         onValueChange = { newValue ->
@@ -328,16 +322,14 @@ fun SetsInput(
             }
             updateSet(newSets)
         },
-        // This forces it to only show the number typing
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         label = { Text(stringResource(id = R.string.sets)) },
         modifier = modifier
     )
 }
 
-
 /**
- * This is where the user inputs the number of reps they want to do
+ * Composable function for inputting the number of reps.
  * @return the updated number of reps
  */
 @Composable
@@ -345,7 +337,7 @@ fun RepsInput(
     reps: Int,
     modifier: Modifier,
     updateReps: (Int) -> Unit
-){
+) {
     OutlinedTextFieldWithKeyboardDismiss(
         value = reps.toString(),
         onValueChange = { newValue ->
@@ -362,9 +354,8 @@ fun RepsInput(
     )
 }
 
-
 /**
- * This is where the user inputs the weight they want to use during the exercise
+ * Composable function for inputting the weight to be used during the exercise.
  * @return the updated weight in kg
  */
 @Composable
@@ -390,9 +381,8 @@ fun WeightInput(
 }
 
 /**
- * This is the length input function, it allows the user to determine their own approximate times
- * for their exercise
- * @return the approximate length of their exercise
+ * Composable function for inputting the approximate length of the exercise.
+ * @return the approximate length of the exercise
  */
 @Composable
 fun LengthInput(
@@ -415,9 +405,8 @@ fun LengthInput(
     )
 }
 
-
 /**
- * This is the dropset tick box, where the user selects if the exercise is a dropset or not
+ * Composable function for the dropset tick box.
  * @return the updated boolean value for dropsets
  */
 @Composable
@@ -425,7 +414,7 @@ fun DropsetButton(
     dropset: Boolean,
     updateDropset: (Boolean) -> Unit
 ) {
-    var checkedState by remember { mutableStateOf(dropset) } //Managed internally because the attempts before, did not work.
+    var checkedState by remember { mutableStateOf(dropset) }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.clickable {
@@ -448,8 +437,8 @@ fun DropsetButton(
 }
 
 /**
- * This allows the user to determine their rest time in-between sets
- * @return the rest time chosen 
+ * Composable function for selecting the rest time between sets.
+ * @return the selected rest time
  */
 @Composable
 fun RestTime(
@@ -459,6 +448,7 @@ fun RestTime(
 ) {
     var restTime by remember { mutableIntStateOf(rest) }
 
+    // Slider for rest time selection
     Slider(
         value = restTime.toFloat(),
         onValueChange = { newValue ->
@@ -477,17 +467,16 @@ fun RestTime(
 }
 
 /**
- * This is the AddNewImageBox where the box holds the option to add a new image and will call the
- * function "AddNewImage" in the util package.
- * @return image path of the file chosen
+ * Composable function for the Add New Image Box, allowing users to add a new image.
+ * @return the image path of the chosen file
  */
-
 @Composable
 fun AddNewImageBox(
     image: String,
     modifier: Modifier,
     updateImagePath: (String) -> Unit
 ) {
+    // Box for displaying the image and calling the AddNewImage function
     Box(
         modifier = modifier
             .height(300.dp)
@@ -506,7 +495,7 @@ fun AddNewImageBox(
 }
 
 /**
- * This is the preview for the screen
+ * Preview function
  */
 @Preview
 @Composable

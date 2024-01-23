@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="workoutName">이름</string-array>
+    <string-array name="reps">반복</string-array>
+    <string-array name="sets">세트</string-array>
+    <string-array name="dropset">드랍셋</string-array>
+    <string-array name="DayOfWeek">
+        <item>아무 요일</item>
+        <item>월요일</item>
+        <item>화요일</item>
+        <item>수요일</item>
+        <item>목요일</item>
+        <item>금요일</item>
+        <item>토요일</item>
+        <item>일요일</item>
+    </string-array>
+    <string-array name="Focus">
+        <item>아무 포커스</item>
+        <item>팔</item>
+        <item>다리</item>
+        <item>등</item>
+        <item>가슴</item>
+        <item>유산소</item>
+        <item>힘</item>
+        <item>전신</item>
+    </string-array>
+</resources>

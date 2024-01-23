@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="workoutName">الاسم</string-array>
+    <string-array name="reps">التكرارات</string-array>
+    <string-array name="sets">المجموعات</string-array>
+    <string-array name="dropset">التقليل</string-array>
+    <string-array name="DayOfWeek">
+        <item>أي يوم</item>
+        <item>الاثنين</item>
+        <item>الثلاثاء</item>
+        <item>الأربعاء</item>
+        <item>الخميس</item>
+        <item>الجمعة</item>
+        <item>السبت</item>
+        <item>الأحد</item>
+    </string-array>
+    <string-array name="Focus">
+        <item>أي تركيز</item>
+        <item>الذراعين</item>
+        <item>الساقين</item>
+        <item>الظهر</item>
+        <item>الصدر</item>
+        <item>التمرين القلبي</item>
+        <item>القوة</item>
+        <item>الجسم بأكمله</item>
+    </string-array>
+</resources>

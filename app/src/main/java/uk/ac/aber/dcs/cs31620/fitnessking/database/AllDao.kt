@@ -1,9 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.model.database
-
-import androidx.lifecycle.LiveData
-import androidx.room.*
-import kotlinx.coroutines.flow.Flow
-import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
+package uk.ac.aber.dcs.cs31620.fitnessking.database
 
 /*
 This is the DAO class which manages things such as insert/update/delete and the queries for searching.

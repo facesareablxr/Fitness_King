@@ -30,11 +30,13 @@ import java.io.File
 import java.io.IOException
 
 /**
- * Taken from feline-adoption-agency-v10, but moving it into a separate file for the sake of keeping
+ * Adjusted slightly from https://github.com/chriswloftus/feline-adoption-agency-v10/tree/master, but moving it into a separate file for the sake of keeping
  * the classes it is used in shorter.
  *
+ * @param imagePath is the path of the image to be displayed or updated.
+ * @param modifier is the modifier for styling the composable.
+ * @param updateImagePath is a callback function to update the image path after capturing a new photo.
  */
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun AddNewImage(
@@ -43,8 +45,7 @@ fun AddNewImage(
     updateImagePath: (String) -> Unit = {}
 ) {
     var photoFile: File? = remember { null }
-    val ctx = LocalContext.current
-
+    val context = LocalContext.current
 
     val resultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -69,7 +70,7 @@ fun AddNewImage(
                 .fillMaxSize()
                 .clickable {
                     takePicture(
-                        ctx = ctx,
+                        context = context,
                         resultLauncher = resultLauncher,
                     ) {
                         photoFile = it
@@ -81,24 +82,30 @@ fun AddNewImage(
 
 }
 
+/**
+ * Function to initiate the process of taking a picture.
+ *
+ * @param context is the context of the application.
+ * @param resultLauncher is the launcher for handling the result of the camera activity.
+ * @param updateFile is a callback function to update the file after capturing a new photo.
+ */
 private fun takePicture(
-    ctx: Context,
+    context: Context,
     resultLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>,
     updateFile: (File) -> Unit
 ) {
-    // Code obtained and adapted from: https://developer.android.com/training/camera/photobasics
-    // See configuration instructions added to AndroidManifest.xml
+
     val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
     var photoFile: File? = null
 
     // Create the File where the photo should go
     try {
-        photoFile = ResourceUtil.createImageFile(ctx)
+        photoFile = ResourceUtil.createImageFile(context)
     } catch (ex: IOException) {
         // Error occurred while creating the File
         Toast.makeText(
-            ctx,
-            ctx.getString(R.string.imageError),
+            context,
+            context.getString(R.string.imageError),
             Toast.LENGTH_SHORT
         ).show()
     }
@@ -106,21 +113,18 @@ private fun takePicture(
     // Continue only if the File was successfully created
     photoFile?.let {
         val photoUri = FileProvider.getUriForFile(
-            ctx,
-            ctx.packageName,
+            context,
+            context.packageName,
             it
         )
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
         takePictureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         // Request will fail if a camera app not available.
-        // This used to use takePictureIntent.resolveActivity(requireActivity().packageManager)
-        // However this requires a <query> element to be added to the manifest for
-        // Android 30+. The following is simpler.
         try {
             resultLauncher.launch(takePictureIntent)
             updateFile(photoFile)
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(ctx, R.string.photoerror, Toast.LENGTH_LONG)
+            Toast.makeText(context, R.string.photoerror, Toast.LENGTH_LONG)
                 .show()
         }
     }

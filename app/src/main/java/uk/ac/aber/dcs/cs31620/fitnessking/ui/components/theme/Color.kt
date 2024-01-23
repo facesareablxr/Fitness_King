@@ -2,6 +2,11 @@ package uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme
 
 import androidx.compose.ui.graphics.Color
 
+/**
+ * This is the auto generated set of colours from M3 Design Theme picker.
+ */
+
+
 val md_theme_light_primary = Color(0xFF6C4EA2)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFFEBDCFF)

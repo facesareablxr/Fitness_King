@@ -40,4 +40,8 @@
     <string name="chooseFromGallery">Library</string>
     <string name="cancel">Cancel</string>
     <string name="noWorkout">No exercises scheduled for today.</string>
+    <string name="email">example@email.com</string>
+    <string name="userBox">User Name</string>
+    <string name="emailBox">Email</string>
+    <string name="Settings">Settings</string>
 </resources>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fitness King 🜲</string>
+    <string name="home">الرئيسية</string>
+    <string name="schedule">الجدول</string>
+    <string name="profile">الملف الشخصي</string>
+    <string name="nav_drawer_menu">قائمة التنقل</string>
+    <string name="favourite">المحفوظات</string>
+    <string name="settings">الإعدادات</string>
+    <string name="username">لورين ديفيس</string>
+    <string name="date">تاريخ</string>
+    <string name="add_exercise">إضافة تمرين</string>
+    <string name="exercise_name">اسم التمرين</string>
+    <string name="sets">المجموعات</string>
+    <string name="reps">التكرارات</string>
+    <string name="weight">الوزن (كجم)</string>
+    <string name="focus">التركيز</string>
+    <string name="dropset">إسقاط المجموعة</string>
+    <string name="image_url">عنوان صورة</string>
+    <string name="add_exercise_button">إضافة تمرين</string>
+    <string name="savedWorkouts">تمارين محفوظة</string>
+    <string name="addWorkoutButton">زر إضافة تمرين</string>
+    <string name="addWorkout">إضافة تمرين</string>
+    <string name="goBack">زر الرجوع</string>
+    <string name="dropdown_icon">أيقونة القائمة المنسدلة</string>
+    <string name="dropdown">أيقونة القائمة المنسدلة</string>
+    <string name="photoerror">لا يمكن حفظ الصورة</string>
+    <string name="selectExercise">اختر تمرينًا</string>
+    <string name="totalTime">إجمالي وقت التمرين:</string>
+    <string name="addExerciseName">اسم التمرين</string>
+    <string name="exerciseImage">صورة التمرين</string>
+    <string name="enterImage">اضغط لتغيير الصورة</string>
+    <string name="imageError">حدث خطأ</string>
+    <string name="addExercise">إضافة تمرين</string>
+    <string name="AddSuccess">تمت الإضافة بنجاح</string>
+    <string name="AddFail">فشلت الإضافة، تحقق من المعلومات وحاول مرة أخرى</string>
+    <string name="dismiss">تجاهل</string>
+    <string name="length">المدة التقريبية للتمرين</string>
+    <string name="chooseImageSource">مصدر الصورة:</string>
+    <string name="takePhoto">الكاميرا</string>
+    <string name="chooseFromGallery">المعرض</string>
+    <string name="cancel">إلغاء</string>
+    <string name="noWorkout">لا توجد تمارين مجدولة لهذا اليوم.</string>
+    <string name="email">example@email.com</string>
+    <string name="userBox">اسم المستخدم</string>
+    <string name="emailBox">البريد الإلكتروني</string>
+    <string name="Settings">الإعدادات</string>
+
+</resources>

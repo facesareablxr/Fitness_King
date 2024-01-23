@@ -1,16 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.model.database
-
-import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import androidx.sqlite.db.SupportSQLiteDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
-import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
+package uk.ac.aber.dcs.cs31620.fitnessking.database
 
 /* This does not work, however, if it did, it would be a database class which would hold the
 entities, and the cross reference class to allow for workouts to be assigned exercises

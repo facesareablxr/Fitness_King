@@ -53,7 +53,9 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 import java.time.LocalDate
 
 /**
- * This is the home screen top level, it forms the
+ * Top-level composable function for the Home Screen, providing the main entry point.
+ * @param navController is the NavHostController for navigation
+ * @param viewModel is the FitnessViewModel for accessing workout data
  */
 @Composable
 fun HomeScreen(
@@ -61,15 +63,19 @@ fun HomeScreen(
     viewModel: FitnessViewModel = viewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
+
+    // Display the top-level scaffold for the Home Screen
     TopLevelScaffold(
         navController = navController,
         coroutineScope = coroutineScope,
         pageContent = { innerPadding ->
+            // Surface for the page content
             Surface(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
+                // Display the content of the Home Screen
                 HomeScreenContent(
                     modifier = Modifier.padding(8.dp),
                     viewModel = viewModel,
@@ -80,12 +86,19 @@ fun HomeScreen(
     )
 }
 
+/**
+ * Represents the content of the Home Screen, displaying today's workout and exercises.
+ * @param modifier is the Modifier for styling
+ * @param viewModel is the FitnessViewModel for accessing workout data
+ * @param navController is the NavHostController for navigation
+ */
 @Composable
 fun HomeScreenContent(
     modifier: Modifier,
     viewModel: FitnessViewModel,
     navController: NavHostController
 ) {
+    // State variables for today's exercises and workout
     var todaysExercises by remember {
         mutableStateOf<List<Exercise>?>(null)
     }
@@ -93,6 +106,7 @@ fun HomeScreenContent(
         mutableStateOf<Pair<String?, String?>?>(null)
     }
 
+    // Fetch today's exercises and workout asynchronously
     LaunchedEffect(key1 = Unit) {
         try {
             val currentDate = LocalDate.now()
@@ -103,6 +117,7 @@ fun HomeScreenContent(
         }
     }
 
+    // LazyColumn for displaying content
     LazyColumn(
         modifier = modifier
             .padding(4.dp)
@@ -111,6 +126,7 @@ fun HomeScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
+            // Display the current day
             val currentDayCaps = LocalDate.now().dayOfWeek.name
             val currentDay = currentDayCaps.lowercase().replaceFirstChar { it.uppercase() }
             Text(
@@ -122,6 +138,7 @@ fun HomeScreenContent(
         todaysWorkout?.let { workout ->
             todaysExercises?.let { exercises ->
                 item {
+                    // Display the workout overview card
                     WorkoutOverviewCard(
                         modifier = modifier,
                         workoutWithExercises = workout,
@@ -137,11 +154,13 @@ fun HomeScreenContent(
 
             todaysExercises?.let { exercises ->
                 items(exercises) { exercise ->
+                    // Display each exercise card
                     ExerciseCard(exercise = exercise, modifier = modifier)
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             } ?: run {
                 item {
+                    // Display a message when no workout is found
                     Text(
                         text = stringResource(R.string.noWorkout),
                         style = MaterialTheme.typography.bodyMedium
@@ -149,10 +168,7 @@ fun HomeScreenContent(
                 }
             }
             item {
-                Spacer(modifier = Modifier.height(4.dp))
-            }
-
-            item {
+                // Button to navigate to the Add Workout screen
                 Button(
                     onClick = {
                         navController.navigate(Screen.AddWorkout.route)
@@ -165,6 +181,13 @@ fun HomeScreenContent(
     }
 }
 
+/**
+ * Represents a stylized workout overview card that displays workout details.
+ * @param modifier is the Modifier for styling
+ * @param workoutWithExercises is the Pair of day and focus for the workout
+ * @param exercises is the list of exercises for the workout
+ * @param fitnessViewModel is the FitnessViewModel for accessing workout data
+ */
 @Composable
 fun WorkoutOverviewCard(
     modifier: Modifier,
@@ -175,6 +198,7 @@ fun WorkoutOverviewCard(
     val (day, focus) = workoutWithExercises
     var isMenuVisible by remember { mutableStateOf(false) }
 
+    // Box for positioning elements
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -184,11 +208,13 @@ fun WorkoutOverviewCard(
         ElevatedCard(
             modifier = Modifier.fillMaxWidth(),
         ) {
+            // Column for organizing workout details
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
+                // Row for workout day and three-dot button
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -196,19 +222,22 @@ fun WorkoutOverviewCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Display the workout overview title
                     Text(
                         text = "Workout Overview",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold
                     )
+                    // Box for three-dot menu
                     Box {
-                        // Three dot menu
+                        // Three dot menu button
                         IconButton(
                             onClick = { isMenuVisible = true },
                             modifier = Modifier.size(24.dp)
                         ) {
                             Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
                         }
+                        // Dropdown menu for workout options
                         DropdownMenu(
                             expanded = isMenuVisible,
                             onDismissRequest = { isMenuVisible = false },
@@ -216,6 +245,7 @@ fun WorkoutOverviewCard(
                                 .wrapContentWidth()
                                 .padding(8.dp)
                         ) {
+                            // Dropdown menu item for deleting the workout
                             DropdownMenuItem(
                                 onClick = {
                                     isMenuVisible = false
@@ -229,6 +259,8 @@ fun WorkoutOverviewCard(
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
+
+                // Display workout focus
                 Text(
                     text = buildAnnotatedString {
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -238,6 +270,8 @@ fun WorkoutOverviewCard(
                     },
                     style = MaterialTheme.typography.bodyMedium
                 )
+
+                // Display number of exercises
                 Text(
                     text = buildAnnotatedString {
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -247,6 +281,8 @@ fun WorkoutOverviewCard(
                     },
                     style = MaterialTheme.typography.bodyMedium
                 )
+
+                // Display approximate workout length
                 val totalLength = exercises.sumOf { it.length + (it.restTime * it.sets)}
                 Text(
                     text = buildAnnotatedString {
@@ -257,32 +293,38 @@ fun WorkoutOverviewCard(
                     },
                     style = MaterialTheme.typography.bodyMedium
                 )
-                Spacer(modifier = Modifier.height(4.dp)) // Reduce the space here
+                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }
 }
 
-
 /**
- *
+ * Represents a stylized exercise card that displays exercise details.
+ * @param exercise is the Exercise object to display
+ * @param modifier is the Modifier for styling
  */
 @Composable
 fun ExerciseCard(
     exercise: Exercise,
     modifier: Modifier
 ) {
+    // Async image painter for exercise image
     val painter = rememberAsyncImagePainter(model = exercise.image)
+
+    // Card for displaying exercise details
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
     ) {
+        // Column for organizing exercise details
         Column(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
+            // Display exercise name
             Text(
                 text = exercise.name,
                 style = MaterialTheme.typography.titleLarge,
@@ -291,7 +333,7 @@ fun ExerciseCard(
 
             Spacer(modifier = modifier.height(4.dp))
 
-            // This is the exercise image that is stored with it in the text file
+            // Display exercise image
             Image(
                 painter = painter,
                 contentDescription = "Exercise Image",
@@ -305,7 +347,7 @@ fun ExerciseCard(
 
             Spacer(modifier = modifier.height(4.dp))
 
-            // Display full exercise information with rest time
+            // Display exercise details with sets, reps, weight, and rest time
             Column {
                 Text(
                     text = buildAnnotatedString {

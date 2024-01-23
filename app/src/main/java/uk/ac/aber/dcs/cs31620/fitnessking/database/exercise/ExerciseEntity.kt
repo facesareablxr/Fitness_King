@@ -1,8 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.model.database.exercise
-
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+package uk.ac.aber.dcs.cs31620.fitnessking.database.exercise
 
 
 /*

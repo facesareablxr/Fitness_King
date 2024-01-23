@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -48,22 +49,32 @@ import uk.ac.aber.dcs.cs31620.fitnessking.model.datafiles.FitnessViewModel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.ButtonSpinner
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.SmallTopAppBar
 
-
+/**
+ * Top-level composable function for the Add New Workout screen.
+ * @param navController is the NavHostController for navigation
+ */
 @Composable
 fun AddNewWorkoutTopLevel(navController: NavHostController) {
     AddNewWorkout(navController)
 }
 
+/**
+ * Main setup for the Add New Workout screen, initializing variables and setting up the scaffold for content.
+ * Uses SmallTopAppBar for the top bar customization.
+ * @param navController is the NavHostController for navigation
+ */
 @Composable
 fun AddNewWorkout(navController: NavHostController) {
     val coroutineScope = rememberCoroutineScope()
 
     val fitnessViewModel: FitnessViewModel = viewModel()
 
+    // Fetching exercises from the view model
     var exercises by remember {
         mutableStateOf<List<Exercise>>(emptyList())
     }
 
+    // Launched effect to read exercises asynchronously
     LaunchedEffect(key1 = Unit) {
         try {
             val result = fitnessViewModel.readExercises()
@@ -75,28 +86,30 @@ fun AddNewWorkout(navController: NavHostController) {
         }
     }
 
+    // Append the focus values to an array
     val values = stringArrayResource(id = R.array.Focus)
     val focusValues = values.copyOfRange(1, values.size)
 
     // Get the list of workout days that are not already scheduled
-    val availableDays by remember { fitnessViewModel.getAvailableWorkoutDays() }.observeAsState(emptyList())
+    val availableDays by remember { fitnessViewModel.getAvailableWorkoutDays() }.observeAsState(
+        emptyList()
+    )
 
-    // State for holding selected exercises
+    // State variables for selected exercises and workout details
     var selectedExercises by remember { mutableStateOf(emptyList<Exercise>()) }
-
-    // State for workout details
     var dayOfWorkout by remember { mutableStateOf(availableDays.firstOrNull() ?: "") }
     var exerciseFocus by remember { mutableStateOf("") }
-    var exerciseLengths by remember { mutableStateOf(emptyList<Int>()) }
     var workoutLength by remember { mutableStateOf("") }
 
     // Scaffold for the screen layout
     Scaffold(
         topBar = { SmallTopAppBar(navController, title = "Add Workout") },
-        floatingActionButton= {
+        floatingActionButton = {
+            // Floating action button to confirm the workout addition
             FloatingActionButton(
                 onClick = {
                     if (dayOfWorkout.isNotEmpty() && exerciseFocus.isNotEmpty() && selectedExercises.isNotEmpty()) {
+                        // Creating WorkoutWithExercises and adding it to the view model
                         val workoutWithExercises = WorkoutWithExercises(
                             dayOfWeek = dayOfWorkout,
                             focus = exerciseFocus,
@@ -104,11 +117,14 @@ fun AddNewWorkout(navController: NavHostController) {
                         )
                         fitnessViewModel.addWorkoutWithExercises(workoutWithExercises)
 
+                        // Writing updated workouts to storage
                         val workoutsWithExercises = fitnessViewModel.getAllWorkoutsWithExercises()
                         fitnessViewModel.writeWorkoutsWithExercises(workoutsWithExercises)
 
+                        // Navigating back
                         navController.navigateUp()
                     } else {
+                        // Displaying a snackbar if required fields are not filled
                         coroutineScope.launch {
                             SnackbarHostState().showSnackbar(
                                 message = "Please fill in all required fields",
@@ -118,8 +134,8 @@ fun AddNewWorkout(navController: NavHostController) {
                         }
                     }
                 }
-            )
-            {
+            ) {
+                // Checkmark icon for the floating action button
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = stringResource(R.string.addExercise)
@@ -127,9 +143,10 @@ fun AddNewWorkout(navController: NavHostController) {
             }
         },
         content = { innerPadding ->
+            // Main content of the screen
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Top,
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
@@ -139,7 +156,8 @@ fun AddNewWorkout(navController: NavHostController) {
                 DayOfWeekInput(
                     values = availableDays.toTypedArray(),
                     modifier = Modifier
-                        .padding(12.dp),
+                        .padding(12.dp)
+                        .wrapContentWidth(),
                     updateDayOfWeek = {
                         dayOfWorkout = it
                     }
@@ -150,7 +168,7 @@ fun AddNewWorkout(navController: NavHostController) {
                 // Display focus input
                 Text(text = "Focus:")
                 FocusInput(
-                    values = values,
+                    values = focusValues,
                     modifier = Modifier
                         .padding(12.dp)
                         .wrapContentWidth(),
@@ -182,17 +200,17 @@ fun AddNewWorkout(navController: NavHostController) {
                 if (isDialogVisible) {
                     ExerciseSelectionAlertDialog(
                         onDismissRequest = {
-                            selectedExercises = selectedExercises
                             isDialogVisible = false
                         },
-                        dialogTitle = "Select Exercises",
+                        viewModel = fitnessViewModel,
                         onExerciseSelected = {
                             selectedExercises = it
                             isDialogVisible = false
 
-                            workoutLength = fitnessViewModel.calculateWorkoutLength(selectedExercises, 0)
-                        },
-                        viewModel = fitnessViewModel
+                            // Calculate workout length
+                            workoutLength =
+                                fitnessViewModel.calculateWorkoutLength(selectedExercises, 0)
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -205,7 +223,10 @@ fun AddNewWorkout(navController: NavHostController) {
 }
 
 /**
- * Function to add workout only on days that are not already scheduled
+ * Function to add workout only on days that are not already scheduled.
+ * @param values is the array of available days
+ * @param modifier is the modifier for the DayOfWeekInput
+ * @param updateDayOfWeek is the callback to update the selected day of the week
  */
 @Composable
 fun DayOfWeekInput(
@@ -224,7 +245,10 @@ fun DayOfWeekInput(
 }
 
 /**
- * Function to display focus input based on available exercises
+ * Function to display focus input based on available exercises.
+ * @param values is the array of available focus values
+ * @param modifier is the modifier for the FocusInput
+ * @param updateFocus is the callback to update the selected focus
  */
 @Composable
 fun FocusInput(
@@ -242,7 +266,13 @@ fun FocusInput(
     )
 }
 
-
+/**
+ * Exercise selection dialog for choosing exercises to add to the workout.
+ * @param onDismissRequest is the callback for dismissing the dialog
+ * @param dialogTitle is the title of the dialog
+ * @param onExerciseSelected is the callback for handling selected exercises
+ * @param viewModel is the FitnessViewModel for accessing exercise data
+ */
 @Composable
 fun ExerciseSelectionAlertDialog(
     onDismissRequest: () -> Unit,
@@ -250,27 +280,29 @@ fun ExerciseSelectionAlertDialog(
     onExerciseSelected: (List<Exercise>) -> Unit,
     viewModel: FitnessViewModel = viewModel()
 ) {
+    // Fetching exercises from the view model
     val exercises = viewModel.readExercises()
     var selectedExercises by remember { mutableStateOf(emptyList<Exercise>()) }
 
+    // AlertDialog for exercise selection
     AlertDialog(
         title = { Text(text = dialogTitle) },
         text = {
-            if (exercises != null) {
-                ExerciseSelectionDialogContent(
-                    exercises = exercises,
-                    selectedExercises = selectedExercises,
-                    onSelectionChanged = { selectedExercises = it }
-                )
-            }
+            ExerciseSelectionDialogContent(
+                exercises = exercises,
+                selectedExercises = selectedExercises,
+                onSelectionChanged = { selectedExercises = it }
+            )
         },
         onDismissRequest = onDismissRequest,
         confirmButton = {
+            // Confirm button to save selected exercises
             TextButton(onClick = { onExerciseSelected(selectedExercises) }) {
                 Text("Confirm")
             }
         },
         dismissButton = {
+            // Dismiss button to close the dialog
             TextButton(onClick = onDismissRequest) {
                 Text("Dismiss")
             }
@@ -278,6 +310,12 @@ fun ExerciseSelectionAlertDialog(
     )
 }
 
+/**
+ * Content of the exercise selection dialog, displaying a list of exercises with checkboxes.
+ * @param exercises is the list of available exercises
+ * @param selectedExercises is the list of currently selected exercises
+ * @param onSelectionChanged is the callback for handling changes in the selection
+ */
 @Composable
 private fun ExerciseSelectionDialogContent(
     exercises: List<Exercise>,
@@ -292,6 +330,7 @@ private fun ExerciseSelectionDialogContent(
     ) {
         Text(text = "Select Exercises")
 
+        // LazyColumn displaying a list of exercises with checkboxes
         LazyColumn {
             items(exercises) { exercise ->
                 ExerciseSelectionItem(exercise, selectedExercises, onSelectionChanged)
@@ -300,6 +339,12 @@ private fun ExerciseSelectionDialogContent(
     }
 }
 
+/**
+ * Item in the exercise selection dialog, representing a single exercise with a checkbox.
+ * @param exercise is the exercise to display
+ * @param selectedExercises is the list of currently selected exercises
+ * @param onSelectionChanged is the callback for handling changes in the selection
+ */
 @Composable
 private fun ExerciseSelectionItem(
     exercise: Exercise,
@@ -323,6 +368,7 @@ private fun ExerciseSelectionItem(
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Checkbox for exercise selection
         Checkbox(
             checked = isChecked,
             onCheckedChange = null
@@ -334,12 +380,16 @@ private fun ExerciseSelectionItem(
     }
 }
 
+/**
+ * Display for the total workout length in a card.
+ * @param totalLength is the total length of the workout
+ */
 @Composable
 fun WorkoutLength(totalLength: String) {
     Card(
         modifier = Modifier
             .padding(16.dp)
-            .fillMaxWidth()
+            .wrapContentSize()
     ) {
         Column(
             modifier = Modifier.padding(16.dp),

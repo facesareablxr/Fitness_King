@@ -15,7 +15,10 @@ import uk.ac.aber.dcs.cs31620.fitnessking.R
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
 /**
- * This is the main page top app bar, it has a burger button for the user to press and open the navigation menu.
+ * Composable for the main page top app bar. It includes a burger button for the user to press and open the navigation menu.
+ *
+ * @param onClick is the callback function for the burger button click event
+ * @param scrollBehavior defines the scroll behavior for the top app bar
  */
 @Composable
 fun MainPageTopAppBar(
@@ -38,7 +41,7 @@ fun MainPageTopAppBar(
 }
 
 /**
- * This is just the preview for it
+ * Preview function
  */
 @Preview
 @Composable

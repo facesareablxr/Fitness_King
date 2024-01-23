@@ -30,12 +30,15 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.screens
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
 /**
- * This is the main page navigation bar, it has the home, schedule and saved exercises as options
- * for navigation, modelled on the ones from the FAA application, but adapted to have 3 options
+ * This composable represents the main page navigation bar, offering options for home, schedule, and saved exercises.
+ * The design is modeled after the FAA application, with adaptations for three navigation options.
+ *
+ * @param navController is the NavController for navigation
  */
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun MainPageNavigationBar(navController: NavController) {
+    // Map of icons for each screen
     val icons = mapOf(
         Screen.Home to IconGroup(
             filledIcon = Icons.Filled.Home,
@@ -53,47 +56,52 @@ fun MainPageNavigationBar(navController: NavController) {
             label = stringResource(id = R.string.favourite)
         )
     )
-        // Navigation bar design and declaration
-        NavigationBar(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.contentColorFor(MaterialTheme.colorScheme.surface),
-        ) {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentDestination = navBackStackEntry?.destination
-            screens.forEach { screen ->
-                val isSelected =
-                    currentDestination?.hierarchy?.any { it.route == screen.route } == true
-                val labelText = icons[screen]!!.label
-                NavigationBarItem(
-                    // Manages the icon changes
-                    icon = {
-                        Icon(
-                            imageVector = (
-                                    if (isSelected)
-                                        icons[screen]!!.filledIcon
-                                    else
-                                        icons[screen]!!.outlineIcon),
-                            contentDescription = labelText
-                        )
-                    },
-                    label = { Text(labelText) },
-                    selected = isSelected,
-                    // Manages the navigation
-                    onClick = {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+
+    // Navigation bar design and declaration
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.contentColorFor(MaterialTheme.colorScheme.surface),
+    ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
+
+        // Iterate through screens and create navigation items
+        screens.forEach { screen ->
+            val isSelected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
+            val labelText = icons[screen]!!.label
+
+            NavigationBarItem(
+                // Manages the icon changes
+                icon = {
+                    Icon(
+                        imageVector = (
+                                if (isSelected)
+                                    icons[screen]!!.filledIcon
+                                else
+                                    icons[screen]!!.outlineIcon),
+                        contentDescription = labelText
+                    )
+                },
+                label = { Text(labelText) },
+                selected = isSelected,
+                // Manages the navigation
+                onClick = {
+                    navController.navigate(screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
                         }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                )
-            }
+                }
+            )
         }
     }
+}
 
-
+/**
+ * Preview function
+ */
 @Preview
 @Composable
 private fun MainPageNavigationBarPreview() {

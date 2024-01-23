@@ -8,9 +8,9 @@ sealed class Screen(val route: String) {
     data object Schedule : Screen("schedule")
     data object Saved: Screen("saved")
     data object AddExercise : Screen("addExercise")
-    data object EditExercise : Screen("editExercise")
     data object AddWorkout : Screen("addWorkout")
-    data object  EditWorkout : Screen ("editWorkout")
+    data object Profile : Screen ("profile")
+    data object Settings : Screen("settings")
 }
 
 /**

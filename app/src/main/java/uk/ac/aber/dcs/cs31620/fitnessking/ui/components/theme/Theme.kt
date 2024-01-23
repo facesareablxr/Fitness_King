@@ -15,6 +15,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+/**
+ * This is the auto generated theme from M3 Design Theme picker.
+ */
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -85,7 +88,6 @@ private val DarkColors = darkColorScheme(
 @Composable
 fun FitnessKingTheme(
         darkTheme: Boolean = isSystemInDarkTheme(),
-        // Dynamic color is available on Android 12+
         dynamicColor: Boolean = false,
         content: @Composable () -> Unit
 ) {

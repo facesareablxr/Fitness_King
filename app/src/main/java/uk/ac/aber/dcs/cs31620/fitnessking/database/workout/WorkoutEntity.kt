@@ -1,13 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.model.database.workout
-
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.DaysOfWeek
-import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Exercise
-import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Focus
-
+package uk.ac.aber.dcs.cs31620.fitnessking.database.workout
 
 
 /*
