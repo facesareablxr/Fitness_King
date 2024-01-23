@@ -46,4 +46,5 @@
     <string name="Settings">Settings</string>
     <string name="name">Lauren</string>
     <string name="greeting">Hello</string>
+    <string name="noExercises">You have no worout scheduled for today, schedule one now?</string>
 </resources>

@@ -7,6 +7,8 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.appbars.MainPageTopAppBar
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.MainPageNavigationBar
+import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.MainPageNavigationDrawer
 
 /**
  * This is the top-level scaffold, defining layouts for most screens for consistency.

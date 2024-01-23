@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.ui.components
+package uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.material.icons.Icons
@@ -25,8 +25,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.IconGroup
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.screens
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
 /**

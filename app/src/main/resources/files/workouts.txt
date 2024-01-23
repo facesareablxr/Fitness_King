@@ -1,0 +1,4 @@
+"Workout Day", "Workout Focus"
+"Monday", "Arms"
+"Thursday", "Legs"
+"Sunday", "Back"

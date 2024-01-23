@@ -12,28 +12,46 @@ import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Exercise
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Workout
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.WorkoutWithExercises
 import java.io.File
+import java.io.IOException
 import java.time.LocalDate
 
 /**
- * This is the viewmodel class which reads, writes and updates files.
+ * ViewModel class responsible for managing fitness-related data, including reading, writing, and updating files.
  */
 class FitnessViewModel(application: Application) : AndroidViewModel(application) {
 
-    private var exerciseFile: File = File(application.filesDir, "exercises.csv")
-    private var workoutFile: File = File(application.filesDir, "workouts.csv")
-    private var workoutWithExerciseFile: File =
-        File(application.filesDir, "workoutswithexercises.txt")
+    // Files for storing exercise, workout, and workout with exercises data, will create them if it cannot find them
+    private var exerciseFile: File = createFile(application, "exercises.csv")
+    private var workoutFile: File = createFile(application, "workouts.csv")
+    private var workoutWithExerciseFile: File = createFile(application, "workoutswithexercises.txt")
 
-    /** Manages the reading of the exercises from exercises.csv
-     * This one is different to the rest due to the errors I was having with trying to read from
-     * text file. Sorry!
-     * @return exercises in a list
+    /**
+     * Will create the file if it does not already exist.
+     * @return file at the desired location
+     */
+    private fun createFile(application: Application, fileName: String): File {
+        val file = File(application.filesDir, fileName)
+        if (!file.exists()) {
+            try {
+                file.createNewFile()
+            } catch (e: IOException) {
+                println("Error creating file")
+            }
+        }
+        return file
+    }
+
+    /**
+     * Reads exercises from the exercises.csv file, different to workoutwithexercises.txt due to issues
+     * reading and writing, I would have liked for it to be consistent but ran out of time! Sorry.
+     * @return List of Exercise objects
      */
     fun readExercises(): List<Exercise> {
         val exercises = mutableListOf<Exercise>()
-
+        // Read the exercises from the file
         exerciseFile.readLines().drop(1).mapNotNull { line ->
             try {
+                // Parse CSV line and create exercise object
                 val values = CsvReader().readAll(line).flatten()
                 Exercise(
                     name = values[0],
@@ -48,17 +66,19 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
                     focus = values[9]
                 )
             } catch (e: Exception) {
+                // Return null as it would skip over the lines
                 null
             }
         }
             .forEach { exercises.add(it) }
-        return exercises
+        return exercises // Return the exercises to the application
     }
 
     /**
-     * Manages the addition of exercises by ensuring the new exercise is in the same format
+     * Adds a new exercise to the exercises list and updates the file.
      */
     fun addExercise(
+        // Create new Exercise object
         name: String,
         sets: Int,
         reps: Int,
@@ -68,7 +88,7 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
         image: String,
         favourite: Boolean,
         rest: Int,
-        focus: String
+        focus: String,
     ) {
         try {
             val newExercise = Exercise(
@@ -83,6 +103,7 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
                 restTime = rest,
                 focus = focus
             )
+            // Read current exercises, add new exercise, and update file
             val currentExercises = readExercises().toMutableList()
             currentExercises.add(newExercise)
             updateExercisesFile(currentExercises)
@@ -91,26 +112,15 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun deleteExercise(exerciseName: String) {
-        try {
-            val exercises = readExercises().toMutableList()
-            val index = exercises.indexOfFirst { it.name == exerciseName }
-
-            if (index != -1) {
-                exercises.removeAt(index)
-                updateExercisesFile(exercises)
-            } else {
-                throw NoSuchElementException("Exercise not found")
-            }
-        } catch (e: Exception) {
-            println("Error deleting exercise")
-        }
-    }
-
+    /**
+     * Updates the exercises.csv file with the provided list of exercises.
+     */
     fun updateExercisesFile(exercises: List<Exercise>) {
         try {
+            // Clear files existing content, essentially delete it all
             exerciseFile.writeText("")
 
+            // Write new CSV header to the file
             val csvContent = buildString {
                 appendLine("""name","sets","reps","weight","isDropSet","length","image","isFavourite","restTime","focus""")
                 exercises.forEach { exercise ->
@@ -188,23 +198,17 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun deleteWorkoutWithExercises(workoutDay: String?) {
+    fun addWorkoutWithExercises(workoutWithExercises: WorkoutWithExercises) {
         try {
             val workoutsWithExercises = readWorkoutsWithExercises().toMutableList()
-            val index = workoutsWithExercises.indexOfFirst { it.dayOfWeek == workoutDay }
-
-            if (index != -1) {
-                workoutsWithExercises.removeAt(index)
-                updateWorkoutsWithExercisesFile(workoutsWithExercises)
-            } else {
-                throw NoSuchElementException("Workout not found")
-            }
+            workoutsWithExercises.add(workoutWithExercises)
+            writeWorkoutsWithExercises(workoutsWithExercises)
         } catch (e: Exception) {
-            println("Error deleting workout")
+            println("Error adding workout with exercises")
         }
     }
 
-    private fun updateWorkoutsWithExercisesFile(workoutsWithExercises: List<WorkoutWithExercises>) {
+    fun updateWorkoutsWithExercisesFile(workoutsWithExercises: List<WorkoutWithExercises>) {
         try {
             workoutWithExerciseFile.writeText("")
 
@@ -215,10 +219,12 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
                         append("${workoutWithExercises.dayOfWeek},${workoutWithExercises.focus}")
                     }
                     workoutWithExercises.exercises.forEach { exercise ->
-                        appendLine("$workoutLine," +
-                                "${exercise.name},${exercise.sets},${exercise.reps}," +
-                                "${exercise.weight},${exercise.isDropSet},${exercise.length}," +
-                                "${exercise.image},${exercise.isFavourite},${exercise.restTime}")
+                        appendLine(
+                            "$workoutLine," +
+                                    "${exercise.name},${exercise.sets},${exercise.reps}," +
+                                    "${exercise.weight},${exercise.isDropSet},${exercise.length}," +
+                                    "${exercise.image},${exercise.isFavourite},${exercise.restTime}"
+                        )
                     }
                 }
             }
@@ -227,7 +233,6 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
             println("Error updating workouts with exercises file")
         }
     }
-
 
 
     fun getAvailableWorkoutDays(): LiveData<List<String>> = liveData {
@@ -247,6 +252,17 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
         } catch (e: Exception) {
             println("Error getting available workout days")
         }
+    }
+
+    fun getTodaysWorkout(currentDate: LocalDate): List<WorkoutWithExercises> {
+        val workouts = readWorkoutsWithExercises()
+        val todaysWorkoutsWithExercise = workouts.filter {
+            it.dayOfWeek.equals(
+                currentDate.dayOfWeek.toString(),
+                ignoreCase = true
+            )
+        }
+        return todaysWorkoutsWithExercise
     }
 
     fun getTodaysExercisesWithDetails(currentDate: LocalDate): List<Exercise>? {
@@ -286,16 +302,6 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
         return "$hours hours $minutes minutes"
     }
 
-    fun addWorkoutWithExercises(workoutWithExercises: WorkoutWithExercises) {
-        try {
-            val workoutsWithExercises = readWorkoutsWithExercises().toMutableList()
-            workoutsWithExercises.add(workoutWithExercises)
-            writeWorkoutsWithExercises(workoutsWithExercises)
-        } catch (e: Exception) {
-            println("Error adding workout with exercises")
-        }
-    }
-
     fun getAllWorkoutsWithExercises(): List<WorkoutWithExercises> {
         return try {
             readWorkoutsWithExercises()
@@ -303,7 +309,4 @@ class FitnessViewModel(application: Application) : AndroidViewModel(application)
             emptyList()
         }
     }
-
-
-
 }

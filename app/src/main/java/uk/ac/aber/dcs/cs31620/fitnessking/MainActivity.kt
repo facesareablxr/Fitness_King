@@ -22,15 +22,13 @@ import uk.ac.aber.dcs.cs31620.fitnessking.ui.schedule.ScheduleScreenTopLevel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.settings.SettingsScreen
 
 /**
- * Starting activity class. Entry point for the app.
- * @author Chris Loftus
+ * Starting actibity point, made using first tutorial in the year
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             FitnessKingTheme(dynamicColor = false) {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

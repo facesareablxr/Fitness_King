@@ -11,7 +11,7 @@ import java.util.Date
 private const val FK_TAG = "FK"
 
 /**
- * Utility object for handling photo-related operations.
+ * Utility object for handling photo-related operations. Adapted from FAA V10, Chris Loftus
  */
 object ResourceUtil {
     /**
@@ -23,17 +23,15 @@ object ResourceUtil {
      */
     fun getPhotoFileUri(context: Context, fileName: String): File {
         // Get safe storage directory for photos
-        // Use `getExternalFilesDir` on Context to access package-specific directories.
-        // This way, we don't need to request external read/write runtime permissions.
         val mediaStorageDir: File =
             File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), FK_TAG)
 
-        // Create the storage directory if it does not exist
+        // Create the storage directory
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
             Log.d(FK_TAG, "failed to create directory")
         }
 
-        // Return the file target for the photo based on filename
+        // Return the file target
         return File(mediaStorageDir.path + File.separator + fileName)
     }
 
@@ -45,7 +43,6 @@ object ResourceUtil {
      */
     @SuppressLint("SimpleDateFormat")
     fun createImageFile(context: Context): File {
-        // Code obtained and adapted from: https://developer.android.com/training/camera/photobasics
         // Create an image file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmm-ss").format(Date())
         val imageFileName = "JPEG_" + timeStamp + "_"

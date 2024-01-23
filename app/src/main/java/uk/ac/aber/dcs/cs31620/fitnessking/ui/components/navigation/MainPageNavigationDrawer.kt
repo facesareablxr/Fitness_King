@@ -1,4 +1,4 @@
-package uk.ac.aber.dcs.cs31620.fitnessking.ui.components
+package uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -36,7 +36,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import uk.ac.aber.dcs.cs31620.fitnessking.R
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.ItemData
-import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.theme.FitnessKingTheme
 
 /**

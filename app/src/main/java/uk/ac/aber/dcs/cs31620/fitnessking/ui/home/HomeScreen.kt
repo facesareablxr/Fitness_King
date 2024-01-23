@@ -47,6 +47,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import uk.ac.aber.dcs.cs31620.fitnessking.R
 import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.Exercise
+import uk.ac.aber.dcs.cs31620.fitnessking.model.dataclasses.WorkoutWithExercises
 import uk.ac.aber.dcs.cs31620.fitnessking.model.datafiles.FitnessViewModel
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.TopLevelScaffold
 import uk.ac.aber.dcs.cs31620.fitnessking.ui.components.navigation.Screen
@@ -60,7 +61,7 @@ import java.time.LocalDate
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    viewModel: FitnessViewModel = viewModel()
+    viewModel: FitnessViewModel = viewModel(),
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -96,7 +97,7 @@ fun HomeScreen(
 fun HomeScreenContent(
     modifier: Modifier,
     viewModel: FitnessViewModel,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     // State variables for today's exercises and workout
     var todaysExercises by remember {
@@ -106,12 +107,17 @@ fun HomeScreenContent(
         mutableStateOf<Pair<String?, String?>?>(null)
     }
 
+    var todaysFullWorkout by remember{
+        mutableStateOf<List<WorkoutWithExercises>?>(null)
+    }
+
     // Fetch today's exercises and workout asynchronously
     LaunchedEffect(key1 = Unit) {
         try {
             val currentDate = LocalDate.now()
             todaysExercises = viewModel.getTodaysExercisesWithDetails(currentDate)
             todaysWorkout = viewModel.getTodaysWorkoutWithDetails(currentDate)
+            todaysFullWorkout = viewModel.getTodaysWorkout(currentDate)
         } catch (e: Exception) {
             throw NoSuchElementException("Workout not found.")
         }
@@ -122,7 +128,7 @@ fun HomeScreenContent(
         modifier = modifier
             .padding(4.dp)
             .fillMaxSize(),
-        verticalArrangement = Arrangement.Top, // Align to the top of the screen
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
@@ -149,12 +155,15 @@ fun HomeScreenContent(
             todaysExercises?.let { exercises ->
                 item {
                     // Display the workout overview card
-                    WorkoutOverviewCard(
-                        modifier = modifier,
-                        workoutWithExercises = workout,
-                        exercises = exercises,
-                        fitnessViewModel = viewModel,
-                    )
+                    todaysFullWorkout?.let {
+                        WorkoutOverviewCard(
+                            modifier = modifier,
+                            workoutWithExercises = workout,
+                            exercises = exercises,
+                            fitnessViewModel = viewModel,
+                            todaysWorkout = it
+                        )
+                    }
                 }
             }
 
@@ -191,6 +200,7 @@ fun HomeScreenContent(
         }
     }
 }
+
 /**
  * Represents a stylized workout overview card that displays workout details.
  * @param modifier is the Modifier for styling
@@ -203,7 +213,8 @@ fun WorkoutOverviewCard(
     modifier: Modifier,
     workoutWithExercises: Pair<String?, String?>,
     exercises: List<Exercise>,
-    fitnessViewModel: FitnessViewModel = viewModel()
+    fitnessViewModel: FitnessViewModel = viewModel(),
+    todaysWorkout: List<WorkoutWithExercises>
 ) {
     val (day, focus) = workoutWithExercises
     var isMenuVisible by remember { mutableStateOf(false) }
@@ -245,7 +256,10 @@ fun WorkoutOverviewCard(
                             onClick = { isMenuVisible = true },
                             modifier = Modifier.size(24.dp)
                         ) {
-                            Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = null
+                            )
                         }
                         // Dropdown menu for workout options
                         DropdownMenu(
@@ -259,7 +273,7 @@ fun WorkoutOverviewCard(
                             DropdownMenuItem(
                                 onClick = {
                                     isMenuVisible = false
-                                    fitnessViewModel.deleteWorkoutWithExercises(day)
+                                    fitnessViewModel.updateWorkoutsWithExercisesFile(todaysWorkout)
                                 }
                             ) {
                                 Text("Delete Workout")
@@ -293,7 +307,7 @@ fun WorkoutOverviewCard(
                 )
 
                 // Display approximate workout length
-                val totalLength = exercises.sumOf { it.length + (it.restTime * it.sets)}
+                val totalLength = exercises.sumOf { it.length + (it.restTime * it.sets) }
                 Text(
                     text = buildAnnotatedString {
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -317,7 +331,7 @@ fun WorkoutOverviewCard(
 @Composable
 fun ExerciseCard(
     exercise: Exercise,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     // Async image painter for exercise image
     val painter = rememberAsyncImagePainter(model = exercise.image)

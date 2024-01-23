@@ -45,4 +45,5 @@
     <string name="userBox">Benutzername</string>
     <string name="emailBox">E-Mail</string>
     <string name="Settings">Einstellungen</string>
+    <string name="noExercises">You have no worout scheduled for today, schedule one now?</string>
 </resources>
