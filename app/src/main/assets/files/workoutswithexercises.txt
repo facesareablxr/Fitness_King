@@ -1,0 +1,4 @@
+"Workout Day","Workout Focus","Exercises"
+"Monday","Arms","Overhead Press,3,8,50,False,3,/data/data/uk.ac.aber.dcs.cs31620.fitnessking/assets/overheadpress.jpg,False,6,Arms","Squats,3,8,60,False,3,/data/data/uk.ac.aber.dcs.cs31620.fitnessking/assets/squat.jpg,True,4,Legs"
+"Thursday","Legs","Squats,3,8,60,False,3,/data/data/uk.ac.aber.dcs.cs31620.fitnessking/assets/squat.jpg,True,4,Legs","Deadlifts,3,5,120,False,3,/data/data/uk.ac.aber.dcs.cs31620.fitnessking/assets/deadlifts.jpg,False,3,Legs","Lunges,3,12,30,False,3,/data/data/uk.ac.aber.dcs.cs31620.fitnessking/assets/lunges.png,False,4,Legs"
+"Sunday","Back","Barbell Rows,3,8,70,False,3,/data/data/uk.ac.aber.dcs.cs31620.fitnessking/assets/barbellrow.jpg,False,2,Back"
