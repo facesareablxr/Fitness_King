@@ -122,19 +122,29 @@ fun HomeScreenContent(
         modifier = modifier
             .padding(4.dp)
             .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top, // Align to the top of the screen
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            // Display the current day
-            val currentDayCaps = LocalDate.now().dayOfWeek.name
-            val currentDay = currentDayCaps.lowercase().replaceFirstChar { it.uppercase() }
+            // Display the greeting with the username
+            val greeting = "${stringResource(R.string.greeting)} ${stringResource(R.string.name)}"
+
             Text(
-                text = currentDay,
+                text = greeting,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            // Display "Today's Session" underneath
+            Text(
+                text = "Today's Session",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(16.dp))
         }
+
+        // Check if there's a workout for today
         todaysWorkout?.let { workout ->
             todaysExercises?.let { exercises ->
                 item {
@@ -167,6 +177,7 @@ fun HomeScreenContent(
                     )
                 }
             }
+
             item {
                 // Button to navigate to the Add Workout screen
                 Button(
@@ -180,7 +191,6 @@ fun HomeScreenContent(
         }
     }
 }
-
 /**
  * Represents a stylized workout overview card that displays workout details.
  * @param modifier is the Modifier for styling

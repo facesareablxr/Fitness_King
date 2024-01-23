@@ -44,4 +44,6 @@
     <string name="userBox">User Name</string>
     <string name="emailBox">Email</string>
     <string name="Settings">Settings</string>
+    <string name="name">Lauren</string>
+    <string name="greeting">Hello</string>
 </resources>
